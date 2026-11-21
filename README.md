@@ -78,3 +78,7 @@ The code already has places for these:
 - **Idle detection**: use Electron's `powerMonitor` to call `pauseAll()` / `resumeAll()` in `timers.ts` when you step away.
 - **Spotify detection**: check what's playing via `osascript`, for example to hold reminders during calls or focus music. This would go in a new `src/main/integrations/` folder.
 - **Full-screen break overlay**: listen to the timer engine's `fired` event (next to the notifier in `main/index.ts`) and show a gentle full-screen window.
+
+## License
+
+[MIT](LICENSE): you are free to use, change and share this code, as long as you keep the copyright notice.

@@ -29,5 +29,6 @@
   },
   "allowScripts": {
     "electron-winstaller": false
-  }
+  },
+  "license": "MIT"
 }
