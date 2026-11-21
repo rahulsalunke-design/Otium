@@ -12,11 +12,20 @@ It comes with three built-in reminders:
 
 In **Settings** you can switch any of them off, change how often each one comes up, and **add your own** (for example "Stretch" every 30 minutes or "Take a walk" every 90), up to 10 reminders in total. Your own reminders can be renamed or deleted; the built-in ones can only be switched off. Everything is saved between launches.
 
+Each reminder has an **icon** too: the built-in ones start with a standing person, a glass of water and an eye, and you can pick any of 21 icons (walk, breathe, coffee, medicine and more) for any reminder in Settings.
+
 Each reminder also has its own **sound**, picked from four calm sounds made for Otium (**Chime**, **Droplet**, **Rise** and **Bowl**) or **None** for silence. Choosing a sound plays it, and the ▶ button plays it again. By default, Stand up uses Rise, Water uses Droplet, Eye break uses Bowl, and your own reminders use Chime. For now, sounds play even when a macOS Focus mode is on.
+
+The panel has two views, switched with the buttons at the top:
+
+- **List**: a full card for each reminder, with the exact countdown, start/pause/reset, and when it comes up next.
+- **Glance**: a compact grid of rings, one per reminder. Each ring empties like a clock as the time runs down, with its icon in the middle and the time left in minutes. Hover over a ring to pause or start it.
+
+Otium remembers which view you used last.
 
 Each switched-on reminder has its own timer with start, pause and reset. When a timer runs out, you get a macOS notification and the timer starts again by itself. If now isn't a good moment, **Snooze 5 min** (in the notification, or on the timer card for 10 minutes after a reminder).
 
-Otium lives only in the menu bar: no dock icon. Click the icon to open the panel, and click anywhere else to close it. Right-click the icon (or use the link at the bottom of the panel) to quit.
+Otium lives only in the menu bar: no dock icon. Click the icon to open the panel, and click anywhere else to close it. To quit, click the power button at the top right of the panel, or right-click the menu bar icon.
 
 ## Requirements
 
@@ -69,7 +78,8 @@ src/
 └── renderer/              The panel (React)
     └── src/
         ├── App.tsx        Header, timer list or settings, footer
-        ├── components/    TimerCard, Settings, Icons
+        ├── components/    TimerCard (List view), GlanceView, Settings, ReminderIcon, Icons
+        ├── lib/time.ts    Countdown and minutes formatting shared by both views
         ├── hooks/         useTimers: live data from the engine
         └── styles.css     Colours (light and dark), type, layout
 resources/                 Menu bar icon (template images that macOS colours for you) and sounds/

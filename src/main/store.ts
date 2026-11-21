@@ -1,12 +1,15 @@
 import Store from 'electron-store'
 import {
   BUILT_IN_REMINDERS,
+  DEFAULT_ICON,
   DEFAULT_SOUND,
+  ICON_IDS,
   MAX_LABEL_LENGTH,
   MAX_MINUTES,
   MAX_REMINDERS,
   MIN_MINUTES,
   SOUND_IDS,
+  type IconId,
   type Reminder,
   type SoundId
 } from '@shared/types'
@@ -34,6 +37,11 @@ function cleanSound(value: unknown, fallback: SoundId): SoundId {
   return SOUND_IDS.includes(value as SoundId) ? (value as SoundId) : fallback
 }
 
+/** Unknown or missing icons (e.g. reminders saved before icons existed) get the default. */
+function cleanIcon(value: unknown, fallback: IconId): IconId {
+  return ICON_IDS.includes(value as IconId) ? (value as IconId) : fallback
+}
+
 /**
  * Turns whatever was sent or saved into a safe list: every built-in reminder
  * present exactly once (with its own name), custom ones with a valid id and
@@ -54,7 +62,8 @@ export function cleanReminders(input: unknown): Reminder[] {
       ...def,
       minutes: cleanMinutes(saved?.minutes, def.minutes),
       enabled: typeof saved?.enabled === 'boolean' ? saved.enabled : def.enabled,
-      sound: cleanSound(saved?.sound, def.sound)
+      sound: cleanSound(saved?.sound, def.sound),
+      icon: cleanIcon(saved?.icon, def.icon)
     }
   })
 
@@ -70,7 +79,8 @@ export function cleanReminders(input: unknown): Reminder[] {
       minutes: cleanMinutes(item.minutes, 30),
       enabled: item.enabled !== false,
       builtIn: false,
-      sound: cleanSound(item.sound, DEFAULT_SOUND)
+      sound: cleanSound(item.sound, DEFAULT_SOUND),
+      icon: cleanIcon(item.icon, DEFAULT_ICON)
     })
   }
 

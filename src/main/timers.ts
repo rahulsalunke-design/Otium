@@ -1,5 +1,5 @@
 import { EventEmitter } from 'node:events'
-import { SNOOZE_MINUTES, type Reminder, type SoundId, type TimerSnapshot, type TimerStatus } from '@shared/types'
+import { SNOOZE_MINUTES, type IconId, type Reminder, type SoundId, type TimerSnapshot, type TimerStatus } from '@shared/types'
 
 const MINUTE = 60_000
 const TICK_MS = 1000
@@ -9,6 +9,7 @@ interface TimerState {
   label: string
   builtIn: boolean
   sound: SoundId
+  icon: IconId
   status: TimerStatus
   durationMs: number
   cycleMs: number
@@ -77,6 +78,7 @@ export class TimerEngine extends EventEmitter<TimerEvents> {
       if (existing) {
         existing.label = r.label
         existing.sound = r.sound
+        existing.icon = r.icon
         if (existing.durationMs !== durationMs) {
           existing.durationMs = durationMs
           this.restart(existing)
@@ -88,6 +90,7 @@ export class TimerEngine extends EventEmitter<TimerEvents> {
           label: r.label,
           builtIn: r.builtIn,
           sound: r.sound,
+          icon: r.icon,
           status: 'stopped',
           durationMs,
           cycleMs: durationMs,

@@ -1,15 +1,19 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import {
+  DEFAULT_ICON,
   DEFAULT_SOUND,
+  ICONS,
   MAX_LABEL_LENGTH,
   MAX_MINUTES,
   MAX_REMINDERS,
   MIN_MINUTES,
   SOUNDS,
+  type IconId,
   type Reminder,
   type SoundId
 } from '@shared/types'
 import { PlayIcon, PlusIcon, SpeakerIcon, TrashIcon } from './Icons'
+import { ReminderIcon } from './ReminderIcon'
 
 interface Props {
   onDone: () => void
@@ -35,6 +39,7 @@ export function Settings({ onDone }: Props) {
   const [drafts, setDrafts] = useState<Draft[] | null>(null)
   const [saving, setSaving] = useState(false)
   const [focusId, setFocusId] = useState<string | null>(null)
+  const [iconPickerFor, setIconPickerFor] = useState<string | null>(null)
   const nameRefs = useRef(new Map<string, HTMLInputElement>())
 
   useEffect(() => {
@@ -55,7 +60,7 @@ export function Settings({ onDone }: Props) {
 
   const add = () => {
     const id = crypto.randomUUID()
-    setDrafts([...drafts, { id, label: '', minutes: '30', enabled: true, builtIn: false, sound: DEFAULT_SOUND }])
+    setDrafts([...drafts, { id, label: '', minutes: '30', enabled: true, builtIn: false, sound: DEFAULT_SOUND, icon: DEFAULT_ICON }])
     setFocusId(id)
   }
 
@@ -84,6 +89,11 @@ export function Settings({ onDone }: Props) {
     window.otium.previewSound(sound) // hear it as you pick it
   }
 
+  const chooseIcon = (id: string, icon: IconId) => {
+    update(id, { icon })
+    setIconPickerFor(null)
+  }
+
   const row = (d: Draft) => (
     <li key={d.id} className={`reminder-row ${d.enabled ? '' : 'is-off'}`}>
       <div className="reminder-main">
@@ -95,6 +105,17 @@ export function Settings({ onDone }: Props) {
           onChange={(e) => update(d.id, { enabled: e.target.checked })}
           aria-label={`${d.label || 'New reminder'} on or off`}
         />
+
+        <button
+          type="button"
+          className={`icon-pick ${iconPickerFor === d.id ? 'is-open' : ''}`}
+          onClick={() => setIconPickerFor(iconPickerFor === d.id ? null : d.id)}
+          aria-label={`Choose icon for ${d.label || 'new reminder'}`}
+          aria-expanded={iconPickerFor === d.id}
+          title="Choose icon"
+        >
+          <ReminderIcon icon={d.icon} />
+        </button>
 
         {d.builtIn ? (
           <span className="reminder-name">{d.label}</span>
@@ -170,6 +191,25 @@ export function Settings({ onDone }: Props) {
           <PlayIcon />
         </button>
       </div>
+
+      {iconPickerFor === d.id && (
+        <div className="icon-grid" role="radiogroup" aria-label={`Icon for ${d.label || 'new reminder'}`}>
+          {ICONS.map((i) => (
+            <button
+              key={i.id}
+              type="button"
+              role="radio"
+              aria-checked={d.icon === i.id}
+              className={`icon-choice ${d.icon === i.id ? 'is-selected' : ''}`}
+              onClick={() => chooseIcon(d.id, i.id)}
+              aria-label={i.label}
+              title={i.label}
+            >
+              <ReminderIcon icon={i.id} />
+            </button>
+          ))}
+        </div>
+      )}
     </li>
   )
 

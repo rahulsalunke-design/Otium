@@ -1,12 +1,7 @@
-import { SNOOZE_MINUTES, SNOOZE_OFFER_MS, type TimerAction, type TimerSnapshot } from '@shared/types'
+import { SNOOZE_MINUTES, type TimerAction, type TimerSnapshot } from '@shared/types'
+import { formatCountdown, progressOf, recentlyFired } from '../lib/time'
 import { PauseIcon, PlayIcon, ResetIcon } from './Icons'
-
-function formatCountdown(ms: number): string {
-  const total = Math.ceil(ms / 1000)
-  const m = Math.floor(total / 60)
-  const s = total % 60
-  return `${m}:${String(s).padStart(2, '0')}`
-}
+import { ReminderIcon } from './ReminderIcon'
 
 const clock = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' })
 
@@ -17,24 +12,23 @@ function statusLine(t: TimerSnapshot): string {
   return t.snoozed ? `Snoozed · back at ${at}` : `Next at ${at}`
 }
 
-function recentlyFired(t: TimerSnapshot): boolean {
-  return t.lastFiredAt !== null && Date.now() - t.lastFiredAt < SNOOZE_OFFER_MS
-}
-
 interface Props {
   timer: TimerSnapshot
   onAction: (action: TimerAction) => void
 }
 
+/** List view: one full card per reminder, with the exact countdown. */
 export function TimerCard({ timer: t, onAction }: Props) {
   const running = t.status === 'running'
-  const progress = t.cycleMs > 0 ? Math.min(1, Math.max(0, t.remainingMs / t.cycleMs)) : 0
   const minutes = Math.round(t.durationMs / 60_000)
 
   return (
     <section className={`card ${running ? '' : 'is-idle'}`} aria-label={t.label}>
       <div className="card-top">
         <div className="card-heading">
+          <span className="card-icon">
+            <ReminderIcon icon={t.icon} size={15} />
+          </span>
           <h2 title={t.label}>{t.label}</h2>
           <span className="every">every {minutes} min</span>
         </div>
@@ -65,7 +59,7 @@ export function TimerCard({ timer: t, onAction }: Props) {
       </div>
 
       <div className="progress" aria-hidden="true">
-        <div className="progress-fill" style={{ transform: `scaleX(${progress})` }} />
+        <div className="progress-fill" style={{ transform: `scaleX(${progressOf(t)})` }} />
       </div>
 
       <div className="card-bottom">

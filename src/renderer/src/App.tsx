@@ -1,23 +1,45 @@
 import { useLayoutEffect, useRef, useState } from 'react'
+import { LayoutGrid, List } from 'lucide-react'
+import type { PanelView } from '@shared/types'
 import { useTimers } from './hooks/useTimers'
 import { TimerCard } from './components/TimerCard'
+import { GlanceView } from './components/GlanceView'
 import { Settings } from './components/Settings'
-import { BackIcon, SettingsIcon } from './components/Icons'
+import { BackIcon, PowerIcon, SettingsIcon } from './components/Icons'
 
 type View = 'timers' | 'settings'
+
+const VIEW_KEY = 'otium.panelView'
+
+/** The last chosen view (List or Glance). A per-Mac convenience, so storage failures are fine. */
+function loadPanelView(): PanelView {
+  try {
+    return localStorage.getItem(VIEW_KEY) === 'glance' ? 'glance' : 'list'
+  } catch {
+    return 'list'
+  }
+}
+
+function savePanelView(view: PanelView): void {
+  try {
+    localStorage.setItem(VIEW_KEY, view)
+  } catch {
+    // ignore: the view just won't be remembered
+  }
+}
 
 export function App() {
   const timers = useTimers()
   const [view, setView] = useState<View>('timers')
+  const [panelView, setPanelView] = useState<PanelView>(loadPanelView)
   const headerRef = useRef<HTMLElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
-  const footerRef = useRef<HTMLElement>(null)
 
   // Fit the window to whatever is showing. Measures the full content height
   // (not the visible part), so the window can grow back after it was capped
   // and started scrolling.
   useLayoutEffect(() => {
-    const parts = [headerRef.current, contentRef.current, footerRef.current]
+    const parts = [headerRef.current, contentRef.current]
     if (parts.some((el) => !el)) return
     const report = () =>
       window.otium.resizePanel(parts.reduce((sum, el) => sum + (el?.offsetHeight ?? 0), 0))
@@ -26,21 +48,69 @@ export function App() {
     return () => observer.disconnect()
   }, [])
 
+  const choosePanelView = (next: PanelView) => {
+    setPanelView(next)
+    savePanelView(next)
+  }
+
+  const viewToggle = (
+    <div className="view-toggle" role="radiogroup" aria-label="View">
+      <button
+        type="button"
+        role="radio"
+        aria-checked={panelView === 'list'}
+        className={panelView === 'list' ? 'is-selected' : ''}
+        onClick={() => choosePanelView('list')}
+        aria-label="List view"
+        title="List: full details"
+      >
+        <List size={14} strokeWidth={1.75} aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        role="radio"
+        aria-checked={panelView === 'glance'}
+        className={panelView === 'glance' ? 'is-selected' : ''}
+        onClick={() => choosePanelView('glance')}
+        aria-label="Glance view"
+        title="Glance: icons and rings"
+      >
+        <LayoutGrid size={14} strokeWidth={1.75} aria-hidden="true" />
+      </button>
+    </div>
+  )
+
+  const quitButton = (
+    <button
+      type="button"
+      className="icon-button"
+      onClick={() => window.otium.quit()}
+      aria-label="Quit Otium"
+      title="Quit Otium"
+    >
+      <PowerIcon />
+    </button>
+  )
+
   return (
     <div className="panel">
       <header className="header" ref={headerRef}>
         {view === 'timers' ? (
           <>
             <h1 className="wordmark">Otium</h1>
-            <button
-              type="button"
-              className="icon-button"
-              onClick={() => setView('settings')}
-              aria-label="Settings"
-              title="Settings"
-            >
-              <SettingsIcon />
-            </button>
+            <div className="header-actions">
+              {viewToggle}
+              <button
+                type="button"
+                className="icon-button"
+                onClick={() => setView('settings')}
+                aria-label="Settings"
+                title="Settings"
+              >
+                <SettingsIcon />
+              </button>
+              {quitButton}
+            </div>
           </>
         ) : (
           <>
@@ -54,7 +124,7 @@ export function App() {
               <BackIcon />
             </button>
             <h1 className="header-title">Settings</h1>
-            <span className="header-spacer" />
+            {quitButton}
           </>
         )}
       </header>
@@ -71,6 +141,8 @@ export function App() {
                 Open Settings
               </button>
             </div>
+          ) : panelView === 'glance' ? (
+            <GlanceView timers={timers} onAction={(id, action) => window.otium.timerAction(id, action)} />
           ) : (
             <div className="cards">
               {timers.map((t) => (
@@ -80,12 +152,6 @@ export function App() {
           )}
         </div>
       </main>
-
-      <footer className="footer" ref={footerRef}>
-        <button type="button" className="text-button muted" onClick={() => window.otium.quit()}>
-          Quit Otium
-        </button>
-      </footer>
     </div>
   )
 }
