@@ -35,6 +35,18 @@ export const SettingsIcon = () => (
   </svg>
 )
 
+export const PlusIcon = () => (
+  <svg {...base} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+    <path d="M8 3.5v9M3.5 8h9" />
+  </svg>
+)
+
+export const TrashIcon = () => (
+  <svg {...base} fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.1a1 1 0 0 0 1 .9h3.8a1 1 0 0 0 1-.9l.6-8.1" />
+  </svg>
+)
+
 export const BackIcon = () => (
   <svg {...base} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M10 3 5 8l5 5" />

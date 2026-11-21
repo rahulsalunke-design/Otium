@@ -4,11 +4,15 @@ A calm macOS menu bar app that reminds you to take healthy breaks while you work
 
 *Otium* (OH-tee-um) is Latin for leisure: time away from work, the counterpart to *negotium*, business.
 
+It comes with three built-in reminders:
+
 - **Stand up**: every 45 minutes
 - **Water**: every 60 minutes
 - **Eye break (20-20-20)**: every 20 minutes. Look at something 20 feet away for 20 seconds.
 
-Each reminder has its own timer with start, pause and reset. When a timer runs out, you get a macOS notification and the timer starts again by itself. If now isn't a good moment, **Snooze 5 min** (in the notification, or on the timer card for 10 minutes after a reminder). You can change the intervals in Settings, and they're saved between launches.
+In **Settings** you can switch any of them off, change how often each one comes up, and **add your own** (for example "Stretch" every 30 minutes or "Take a walk" every 90), up to 10 reminders in total. Your own reminders can be renamed or deleted; the built-in ones can only be switched off. Everything is saved between launches.
+
+Each switched-on reminder has its own timer with start, pause and reset. When a timer runs out, you get a macOS notification and the timer starts again by itself. If now isn't a good moment, **Snooze 5 min** (in the notification, or on the timer card for 10 minutes after a reminder).
 
 Otium lives only in the menu bar: no dock icon. Click the icon to open the panel, and click anywhere else to close it. Right-click the icon (or use the link at the bottom of the panel) to quit.
 
@@ -50,13 +54,13 @@ Electron apps have two halves. The **main process** is the engine room: it runs 
 
 ```
 src/
-├── shared/types.ts        Names and shapes used by both halves (timer ids, copy, message names)
+├── shared/types.ts        Names and shapes used by both halves (reminders, built-in copy, limits)
 ├── main/                  Engine room
 │   ├── index.ts           Startup: hides the dock icon, wires everything together
-│   ├── timers.ts          The three timers (stores the end time, so sleep doesn't throw it off)
+│   ├── timers.ts          One timer per switched-on reminder (stores the end time, so sleep doesn't throw it off)
 │   ├── notifier.ts        macOS notifications and the Snooze button
 │   ├── tray.ts            Menu bar icon and the panel window under it
-│   ├── store.ts           Saved settings (electron-store)
+│   ├── store.ts           Saved reminders (electron-store), checked and cleaned on every save
 │   └── ipc.ts             Answers requests from the panel
 ├── preload/index.ts       The bridge: exposes window.otium to the panel
 └── renderer/              The panel (React)

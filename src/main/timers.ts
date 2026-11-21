@@ -1,18 +1,13 @@
 import { EventEmitter } from 'node:events'
-import {
-  SNOOZE_MINUTES,
-  TIMER_IDS,
-  type Durations,
-  type TimerId,
-  type TimerSnapshot,
-  type TimerStatus
-} from '@shared/types'
+import { SNOOZE_MINUTES, type Reminder, type TimerSnapshot, type TimerStatus } from '@shared/types'
 
 const MINUTE = 60_000
 const TICK_MS = 1000
 
 interface TimerState {
-  id: TimerId
+  id: string
+  label: string
+  builtIn: boolean
   status: TimerStatus
   durationMs: number
   cycleMs: number
@@ -26,39 +21,27 @@ interface TimerState {
 
 interface TimerEvents {
   /** A countdown reached zero. The timer has already restarted. */
-  fired: [id: TimerId, wasSnooze: boolean]
+  fired: [timer: TimerSnapshot, wasSnooze: boolean]
   /** Something changed, or a second passed. */
   change: [timers: TimerSnapshot[]]
 }
 
 /**
- * The three reminder clocks. Lives in the main process so it keeps running
- * while the panel is closed.
+ * The reminder clocks, one per switched-on reminder. Lives in the main process
+ * so it keeps running while the panel is closed.
  *
  * v2 hooks: `pauseAll` / `resumeAll` are for idle detection (powerMonitor),
  * and anything that should happen on a reminder (a full-screen break overlay)
  * can listen to the `fired` event next to the notifier.
  */
 export class TimerEngine extends EventEmitter<TimerEvents> {
-  private timers = new Map<TimerId, TimerState>()
+  /** Kept in the same order as the reminders list. */
+  private timers = new Map<string, TimerState>()
   private interval: NodeJS.Timeout | null = null
-  private pausedByAll = new Set<TimerId>()
+  private pausedByAll = new Set<string>()
 
-  constructor(durations: Durations, private now: () => number = Date.now) {
+  constructor(private now: () => number = Date.now) {
     super()
-    for (const id of TIMER_IDS) {
-      const durationMs = durations[id] * MINUTE
-      this.timers.set(id, {
-        id,
-        status: 'stopped',
-        durationMs,
-        cycleMs: durationMs,
-        remainingMs: durationMs,
-        endsAt: null,
-        snoozed: false,
-        lastFiredAt: null
-      })
-    }
   }
 
   begin(): void {
@@ -71,25 +54,62 @@ export class TimerEngine extends EventEmitter<TimerEvents> {
     this.interval = null
   }
 
-  snapshot(): TimerSnapshot[] {
-    const now = this.now()
-    return TIMER_IDS.map((id) => {
-      const t = this.get(id)
-      const remainingMs =
-        t.status === 'running' && t.endsAt !== null ? Math.max(0, t.endsAt - now) : t.remainingMs
-      return { ...t, remainingMs }
-    })
+  has(id: string): boolean {
+    return this.timers.has(id)
   }
 
-  start(id: TimerId): void {
-    const t = this.get(id)
-    if (t.status === 'running') return
-    t.endsAt = this.now() + t.remainingMs
-    t.status = 'running'
+  snapshot(): TimerSnapshot[] {
+    return [...this.timers.values()].map((t) => this.snap(t))
+  }
+
+  /**
+   * Brings the clocks in line with the reminders list: switched-on reminders
+   * get a clock (new ones start straight away), switched-off or deleted ones
+   * lose theirs, and a changed interval restarts that clock.
+   */
+  setReminders(reminders: Reminder[]): void {
+    const next = new Map<string, TimerState>()
+    for (const r of reminders) {
+      if (!r.enabled) continue
+      const durationMs = r.minutes * MINUTE
+      const existing = this.timers.get(r.id)
+      if (existing) {
+        existing.label = r.label
+        if (existing.durationMs !== durationMs) {
+          existing.durationMs = durationMs
+          this.restart(existing)
+        }
+        next.set(r.id, existing)
+      } else {
+        const t: TimerState = {
+          id: r.id,
+          label: r.label,
+          builtIn: r.builtIn,
+          status: 'stopped',
+          durationMs,
+          cycleMs: durationMs,
+          remainingMs: durationMs,
+          endsAt: null,
+          snoozed: false,
+          lastFiredAt: null
+        }
+        this.run(t)
+        next.set(r.id, t)
+      }
+    }
+    for (const id of this.pausedByAll) if (!next.has(id)) this.pausedByAll.delete(id)
+    this.timers = next
     this.changed()
   }
 
-  pause(id: TimerId): void {
+  start(id: string): void {
+    const t = this.get(id)
+    if (t.status === 'running') return
+    this.run(t)
+    this.changed()
+  }
+
+  pause(id: string): void {
     const t = this.get(id)
     if (t.status !== 'running' || t.endsAt === null) return
     t.remainingMs = Math.max(0, t.endsAt - this.now())
@@ -99,24 +119,13 @@ export class TimerEngine extends EventEmitter<TimerEvents> {
   }
 
   /** Back to the full length. Keeps counting if it was running; otherwise waits. */
-  reset(id: TimerId): void {
-    const t = this.get(id)
-    const wasRunning = t.status === 'running'
-    t.cycleMs = t.durationMs
-    t.remainingMs = t.durationMs
-    t.snoozed = false
-    t.lastFiredAt = null
-    if (wasRunning) {
-      t.endsAt = this.now() + t.durationMs
-    } else {
-      t.endsAt = null
-      t.status = 'stopped'
-    }
+  reset(id: string): void {
+    this.restart(this.get(id))
     this.changed()
   }
 
   /** "Remind me again in 5 minutes", then the normal rhythm resumes. */
-  snooze(id: TimerId): void {
+  snooze(id: string): void {
     const t = this.get(id)
     const ms = SNOOZE_MINUTES * MINUTE
     t.cycleMs = ms
@@ -125,17 +134,6 @@ export class TimerEngine extends EventEmitter<TimerEvents> {
     t.status = 'running'
     t.snoozed = true
     t.lastFiredAt = null
-    this.changed()
-  }
-
-  setDurations(durations: Durations): void {
-    for (const id of TIMER_IDS) {
-      const ms = durations[id] * MINUTE
-      const t = this.get(id)
-      if (t.durationMs === ms) continue
-      t.durationMs = ms
-      this.reset(id)
-    }
     this.changed()
   }
 
@@ -151,8 +149,27 @@ export class TimerEngine extends EventEmitter<TimerEvents> {
 
   /** v2: resume only what `pauseAll` paused. */
   resumeAll(): void {
-    for (const id of this.pausedByAll) this.start(id)
+    for (const id of this.pausedByAll) if (this.timers.has(id)) this.start(id)
     this.pausedByAll.clear()
+  }
+
+  private run(t: TimerState): void {
+    t.endsAt = this.now() + t.remainingMs
+    t.status = 'running'
+  }
+
+  private restart(t: TimerState): void {
+    const wasRunning = t.status === 'running'
+    t.cycleMs = t.durationMs
+    t.remainingMs = t.durationMs
+    t.snoozed = false
+    t.lastFiredAt = null
+    if (wasRunning) {
+      t.endsAt = this.now() + t.durationMs
+    } else {
+      t.endsAt = null
+      t.status = 'stopped'
+    }
   }
 
   private tick(): void {
@@ -166,16 +183,22 @@ export class TimerEngine extends EventEmitter<TimerEvents> {
       t.endsAt = now + t.durationMs
       t.snoozed = false
       t.lastFiredAt = now
-      this.emit('fired', t.id, wasSnooze)
+      this.emit('fired', this.snap(t), wasSnooze)
     }
     this.changed()
+  }
+
+  private snap(t: TimerState): TimerSnapshot {
+    const remainingMs =
+      t.status === 'running' && t.endsAt !== null ? Math.max(0, t.endsAt - this.now()) : t.remainingMs
+    return { ...t, remainingMs }
   }
 
   private changed(): void {
     this.emit('change', this.snapshot())
   }
 
-  private get(id: TimerId): TimerState {
+  private get(id: string): TimerState {
     const t = this.timers.get(id)
     if (!t) throw new Error(`Unknown timer: ${id}`)
     return t

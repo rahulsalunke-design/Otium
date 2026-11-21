@@ -1,23 +1,44 @@
 // Shapes and names shared by the main process (engine) and the panel (UI).
 
-export const TIMER_IDS = ['stand', 'water', 'eyes'] as const
-export type TimerId = (typeof TIMER_IDS)[number]
-
 export type TimerStatus = 'running' | 'paused' | 'stopped'
 export type TimerAction = 'start' | 'pause' | 'reset' | 'snooze'
 
-/** Reminder lengths in minutes. */
-export type Durations = Record<TimerId, number>
+/** One reminder: a built-in one (stand, water, eyes) or one the user added. */
+export interface Reminder {
+  id: string
+  label: string
+  /** Interval in minutes. */
+  minutes: number
+  enabled: boolean
+  /** Built-in reminders can be switched off and retimed, but not renamed or deleted. */
+  builtIn: boolean
+}
 
-export const DEFAULT_DURATIONS: Durations = { stand: 45, water: 60, eyes: 20 }
-export const MIN_DURATION = 1
-export const MAX_DURATION = 240
+export const BUILT_IN_REMINDERS: Reminder[] = [
+  { id: 'stand', label: 'Stand up', minutes: 45, enabled: true, builtIn: true },
+  { id: 'water', label: 'Water', minutes: 60, enabled: true, builtIn: true },
+  { id: 'eyes', label: 'Eye break', minutes: 20, enabled: true, builtIn: true }
+]
+
+/** Notification text for the built-in reminders. Custom ones use their name. */
+export const BUILT_IN_COPY: Record<string, { title: string; body: string }> = {
+  stand: { title: 'Time to stand up', body: 'Stretch, roll your shoulders, take a few steps.' },
+  water: { title: 'Time for some water', body: 'Take a few sips. Your body will thank you.' },
+  eyes: { title: 'Rest your eyes', body: 'Look at something 20 feet away for 20 seconds.' }
+}
+
+export const MIN_MINUTES = 1
+export const MAX_MINUTES = 240
+export const MAX_REMINDERS = 10
+export const MAX_LABEL_LENGTH = 30
 export const SNOOZE_MINUTES = 5
 /** How long after a reminder the panel keeps offering "Snooze". */
 export const SNOOZE_OFFER_MS = 10 * 60 * 1000
 
 export interface TimerSnapshot {
-  id: TimerId
+  id: string
+  label: string
+  builtIn: boolean
   status: TimerStatus
   /** Full reminder length, in ms. */
   durationMs: number
@@ -31,31 +52,13 @@ export interface TimerSnapshot {
   lastFiredAt: number | null
 }
 
-export const TIMER_COPY: Record<TimerId, { label: string; title: string; body: string }> = {
-  stand: {
-    label: 'Stand up',
-    title: 'Time to stand up',
-    body: 'Stretch, roll your shoulders, take a few steps.'
-  },
-  water: {
-    label: 'Water',
-    title: 'Time for some water',
-    body: 'Take a few sips. Your body will thank you.'
-  },
-  eyes: {
-    label: 'Eye break',
-    title: 'Rest your eyes',
-    body: 'Look at something 20 feet away for 20 seconds.'
-  }
-}
-
 /** Message names between the panel and the engine. */
 export const IPC = {
   getTimers: 'timers:get',
   timerAction: 'timers:action',
   timersUpdate: 'timers:update',
-  getDurations: 'settings:get',
-  setDurations: 'settings:set',
+  getReminders: 'reminders:get',
+  setReminders: 'reminders:set',
   resizePanel: 'panel:resize',
   quit: 'app:quit'
 } as const
@@ -63,10 +66,10 @@ export const IPC = {
 /** What the panel can call. Exposed as `window.otium` by the preload script. */
 export interface OtiumApi {
   getTimers(): Promise<TimerSnapshot[]>
-  timerAction(id: TimerId, action: TimerAction): Promise<void>
+  timerAction(id: string, action: TimerAction): Promise<void>
   onTimers(listener: (timers: TimerSnapshot[]) => void): () => void
-  getDurations(): Promise<Durations>
-  setDurations(durations: Durations): Promise<Durations>
+  getReminders(): Promise<Reminder[]>
+  setReminders(reminders: Reminder[]): Promise<Reminder[]>
   resizePanel(height: number): void
   quit(): void
 }

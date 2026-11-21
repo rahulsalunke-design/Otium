@@ -10,8 +10,8 @@ const api: OtiumApi = {
     ipcRenderer.on(IPC.timersUpdate, handler)
     return () => ipcRenderer.removeListener(IPC.timersUpdate, handler)
   },
-  getDurations: () => ipcRenderer.invoke(IPC.getDurations),
-  setDurations: (durations) => ipcRenderer.invoke(IPC.setDurations, durations),
+  getReminders: () => ipcRenderer.invoke(IPC.getReminders),
+  setReminders: (reminders) => ipcRenderer.invoke(IPC.setReminders, reminders),
   resizePanel: (height) => ipcRenderer.send(IPC.resizePanel, height),
   quit: () => ipcRenderer.send(IPC.quit)
 }

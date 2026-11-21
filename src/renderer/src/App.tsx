@@ -9,20 +9,26 @@ type View = 'timers' | 'settings'
 export function App() {
   const timers = useTimers()
   const [view, setView] = useState<View>('timers')
-  const rootRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const footerRef = useRef<HTMLElement>(null)
 
-  // Fit the window to whatever is showing.
+  // Fit the window to whatever is showing. Measures the full content height
+  // (not the visible part), so the window can grow back after it was capped
+  // and started scrolling.
   useLayoutEffect(() => {
-    const el = rootRef.current
-    if (!el) return
-    const observer = new ResizeObserver(() => window.otium.resizePanel(el.offsetHeight))
-    observer.observe(el)
+    const parts = [headerRef.current, contentRef.current, footerRef.current]
+    if (parts.some((el) => !el)) return
+    const report = () =>
+      window.otium.resizePanel(parts.reduce((sum, el) => sum + (el?.offsetHeight ?? 0), 0))
+    const observer = new ResizeObserver(report)
+    parts.forEach((el) => observer.observe(el!))
     return () => observer.disconnect()
   }, [])
 
   return (
-    <div className="panel" ref={rootRef}>
-      <header className="header">
+    <div className="panel">
+      <header className="header" ref={headerRef}>
         {view === 'timers' ? (
           <>
             <h1 className="wordmark">Otium</h1>
@@ -53,19 +59,29 @@ export function App() {
         )}
       </header>
 
-      <main>
-        {view === 'timers' ? (
-          <div className="cards">
-            {timers.map((t) => (
-              <TimerCard key={t.id} timer={t} onAction={(action) => window.otium.timerAction(t.id, action)} />
-            ))}
-          </div>
-        ) : (
-          <Settings onDone={() => setView('timers')} />
-        )}
+      <main className="scroll">
+        <div className="content" ref={contentRef}>
+          {view === 'settings' ? (
+            <Settings onDone={() => setView('timers')} />
+          ) : timers === null ? null : timers.length === 0 ? (
+            <div className="empty">
+              <p className="empty-title">All reminders are off</p>
+              <p className="empty-body">Switch some on, or add your own, in Settings.</p>
+              <button type="button" className="button" onClick={() => setView('settings')}>
+                Open Settings
+              </button>
+            </div>
+          ) : (
+            <div className="cards">
+              {timers.map((t) => (
+                <TimerCard key={t.id} timer={t} onAction={(action) => window.otium.timerAction(t.id, action)} />
+              ))}
+            </div>
+          )}
+        </div>
       </main>
 
-      <footer className="footer">
+      <footer className="footer" ref={footerRef}>
         <button type="button" className="text-button muted" onClick={() => window.otium.quit()}>
           Quit Otium
         </button>

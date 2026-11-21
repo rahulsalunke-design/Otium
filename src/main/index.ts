@@ -1,10 +1,9 @@
 import { app } from 'electron'
-import { TIMER_IDS } from '@shared/types'
 import { TimerEngine } from './timers'
 import { createTray } from './tray'
 import { createNotifier } from './notifier'
 import { registerIpc } from './ipc'
-import { getDurations } from './store'
+import { getReminders } from './store'
 
 // Only one copy of Otium at a time.
 if (!app.requestSingleInstanceLock()) {
@@ -16,21 +15,24 @@ if (!app.requestSingleInstanceLock()) {
   app.whenReady().then(() => {
     app.dock?.hide() // menu bar only
 
-    const engine = new TimerEngine(getDurations())
+    const engine = new TimerEngine()
     tray = createTray()
     const { panel, showPanel } = tray
 
     const notify = createNotifier({
-      onSnooze: (id) => engine.snooze(id),
+      onSnooze: (id) => {
+        if (engine.has(id)) engine.snooze(id)
+      },
       onClick: showPanel
     })
-    engine.on('fired', (id) => notify(id))
+    engine.on('fired', (timer) => notify(timer))
     // v2: a full-screen break overlay would also listen to 'fired' here.
 
     registerIpc(engine, panel)
 
-    // Reminders start on their own: a break app you have to remember to start isn't much help.
-    for (const id of TIMER_IDS) engine.start(id)
+    // Switched-on reminders start on their own: a break app you have to
+    // remember to start isn't much help.
+    engine.setReminders(getReminders())
     engine.begin()
 
     app.on('second-instance', showPanel)

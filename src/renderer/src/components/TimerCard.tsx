@@ -1,4 +1,4 @@
-import { SNOOZE_MINUTES, SNOOZE_OFFER_MS, TIMER_COPY, type TimerAction, type TimerSnapshot } from '@shared/types'
+import { SNOOZE_MINUTES, SNOOZE_OFFER_MS, type TimerAction, type TimerSnapshot } from '@shared/types'
 import { PauseIcon, PlayIcon, ResetIcon } from './Icons'
 
 function formatCountdown(ms: number): string {
@@ -27,16 +27,15 @@ interface Props {
 }
 
 export function TimerCard({ timer: t, onAction }: Props) {
-  const copy = TIMER_COPY[t.id]
   const running = t.status === 'running'
   const progress = t.cycleMs > 0 ? Math.min(1, Math.max(0, t.remainingMs / t.cycleMs)) : 0
   const minutes = Math.round(t.durationMs / 60_000)
 
   return (
-    <section className={`card ${running ? '' : 'is-idle'}`} aria-label={copy.label}>
+    <section className={`card ${running ? '' : 'is-idle'}`} aria-label={t.label}>
       <div className="card-top">
         <div className="card-heading">
-          <h2>{copy.label}</h2>
+          <h2 title={t.label}>{t.label}</h2>
           <span className="every">every {minutes} min</span>
         </div>
         <div className="card-buttons">
@@ -44,7 +43,7 @@ export function TimerCard({ timer: t, onAction }: Props) {
             type="button"
             className="icon-button"
             onClick={() => onAction('reset')}
-            aria-label={`Reset ${copy.label}`}
+            aria-label={`Reset ${t.label}`}
             title="Reset"
           >
             <ResetIcon />
@@ -53,7 +52,7 @@ export function TimerCard({ timer: t, onAction }: Props) {
             type="button"
             className="icon-button primary"
             onClick={() => onAction(running ? 'pause' : 'start')}
-            aria-label={`${running ? 'Pause' : 'Start'} ${copy.label}`}
+            aria-label={`${running ? 'Pause' : 'Start'} ${t.label}`}
             title={running ? 'Pause' : 'Start'}
           >
             {running ? <PauseIcon /> : <PlayIcon />}

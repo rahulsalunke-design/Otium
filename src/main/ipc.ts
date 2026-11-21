@@ -1,7 +1,7 @@
 import { BrowserWindow, app, ipcMain } from 'electron'
-import { IPC, TIMER_IDS, type TimerAction, type TimerId } from '@shared/types'
+import { IPC, type TimerAction } from '@shared/types'
 import type { TimerEngine } from './timers'
-import { getDurations, saveDurations } from './store'
+import { getReminders, saveReminders } from './store'
 
 const ACTIONS: TimerAction[] = ['start', 'pause', 'reset', 'snooze']
 const MAX_PANEL_HEIGHT = 640
@@ -11,16 +11,16 @@ export function registerIpc(engine: TimerEngine, panel: BrowserWindow): void {
   ipcMain.handle(IPC.getTimers, () => engine.snapshot())
 
   ipcMain.handle(IPC.timerAction, (_e, id: unknown, action: unknown) => {
-    if (!TIMER_IDS.includes(id as TimerId) || !ACTIONS.includes(action as TimerAction)) return
-    engine[action as TimerAction](id as TimerId)
+    if (typeof id !== 'string' || !engine.has(id) || !ACTIONS.includes(action as TimerAction)) return
+    engine[action as TimerAction](id)
   })
 
-  ipcMain.handle(IPC.getDurations, () => getDurations())
+  ipcMain.handle(IPC.getReminders, () => getReminders())
 
-  ipcMain.handle(IPC.setDurations, (_e, input: unknown) => {
-    const durations = saveDurations(typeof input === 'object' && input ? input : {})
-    engine.setDurations(durations)
-    return durations
+  ipcMain.handle(IPC.setReminders, (_e, input: unknown) => {
+    const reminders = saveReminders(input)
+    engine.setReminders(reminders)
+    return reminders
   })
 
   ipcMain.on(IPC.resizePanel, (_e, height: unknown) => {
