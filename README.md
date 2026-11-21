@@ -1,6 +1,8 @@
-# Pause
+# Otium
 
 A calm macOS menu bar app that reminds you to take healthy breaks while you work.
+
+*Otium* (OH-tee-um) is Latin for leisure: time away from work, the counterpart to *negotium*, business.
 
 - **Stand up**: every 45 minutes
 - **Water**: every 60 minutes
@@ -8,7 +10,7 @@ A calm macOS menu bar app that reminds you to take healthy breaks while you work
 
 Each reminder has its own timer with start, pause and reset. When a timer runs out, you get a macOS notification and the timer starts again by itself. If now isn't a good moment, **Snooze 5 min** (in the notification, or on the timer card for 10 minutes after a reminder). You can change the intervals in Settings, and they're saved between launches.
 
-Pause lives only in the menu bar: no dock icon. Click the icon to open the panel, and click anywhere else to close it. Right-click the icon (or use the link at the bottom of the panel) to quit.
+Otium lives only in the menu bar: no dock icon. Click the icon to open the panel, and click anywhere else to close it. Right-click the icon (or use the link at the bottom of the panel) to quit.
 
 ## Requirements
 
@@ -22,7 +24,7 @@ npm install
 npm run dev
 ```
 
-The Pause icon appears in your menu bar. Changes to the panel (anything in `src/renderer`) show up instantly. Changes to the engine room (`src/main`, `src/preload`) need a restart: press `Ctrl+C` in the terminal and run `npm run dev` again.
+The Otium icon appears in your menu bar. Changes to the panel (anything in `src/renderer`) show up instantly. Changes to the engine room (`src/main`, `src/preload`) need a restart: press `Ctrl+C` in the terminal and run `npm run dev` again.
 
 While developing, notifications show as coming from "Electron". The first time, macOS asks whether to allow them. If you miss that prompt, go to **System Settings → Notifications → Electron**.
 
@@ -32,7 +34,7 @@ While developing, notifications show as coming from "Electron". The first time, 
 npm run build
 ```
 
-This creates `release/mac-arm64/Pause.app` (or `release/mac/Pause.app` on Intel Macs). Drag it into Applications to install it.
+This creates `release/mac-arm64/Otium.app` (or `release/mac/Otium.app` on Intel Macs). Drag it into Applications to install it.
 
 The app is **unsigned** (not signed with an Apple Developer ID). It runs fine on the Mac that built it. If you send it to someone else, macOS will say it's from an unidentified developer; they can right-click it and choose **Open** the first time.
 
@@ -56,7 +58,7 @@ src/
 │   ├── tray.ts            Menu bar icon and the panel window under it
 │   ├── store.ts           Saved settings (electron-store)
 │   └── ipc.ts             Answers requests from the panel
-├── preload/index.ts       The bridge: exposes window.pause to the panel
+├── preload/index.ts       The bridge: exposes window.otium to the panel
 └── renderer/              The panel (React)
     └── src/
         ├── App.tsx        Header, timer list or settings, footer
@@ -67,7 +69,7 @@ resources/                 Menu bar icon (template images that macOS colours for
 build/icon.png             App icon used when packaging
 ```
 
-Settings are saved to `~/Library/Application Support/Pause/config.json`.
+Settings are saved to `~/Library/Application Support/Otium/config.json`.
 
 ## Ideas for v2
 

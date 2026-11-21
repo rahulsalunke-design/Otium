@@ -12,7 +12,7 @@ export function Settings({ onDone }: Props) {
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    window.pause.getDurations().then((d) => {
+    window.otium.getDurations().then((d) => {
       setDraft({ stand: String(d.stand), water: String(d.water), eyes: String(d.eyes) })
     })
   }, [])
@@ -29,7 +29,7 @@ export function Settings({ onDone }: Props) {
     if (invalid.length) return
     setSaving(true)
     const durations = Object.fromEntries(TIMER_IDS.map((id) => [id, Number(draft[id])])) as Durations
-    await window.pause.setDurations(durations)
+    await window.otium.setDurations(durations)
     setSaving(false)
     onDone()
   }

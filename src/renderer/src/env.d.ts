@@ -1,8 +1,8 @@
-import type { PauseApi } from '@shared/types'
+import type { OtiumApi } from '@shared/types'
 
 declare global {
   interface Window {
     /** Provided by the preload script. */
-    pause: PauseApi
+    otium: OtiumApi
   }
 }

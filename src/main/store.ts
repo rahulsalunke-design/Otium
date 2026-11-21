@@ -11,7 +11,7 @@ interface Settings {
   durations: Durations
 }
 
-// Saved as JSON in ~/Library/Application Support/Pause/config.json
+// Saved as JSON in ~/Library/Application Support/Otium/config.json
 const store = new Store<Settings>({
   defaults: { durations: DEFAULT_DURATIONS }
 })

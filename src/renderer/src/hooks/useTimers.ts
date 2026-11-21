@@ -7,8 +7,8 @@ export function useTimers(): TimerSnapshot[] {
 
   useEffect(() => {
     let active = true
-    window.pause.getTimers().then((t) => active && setTimers(t))
-    const unsubscribe = window.pause.onTimers(setTimers)
+    window.otium.getTimers().then((t) => active && setTimers(t))
+    const unsubscribe = window.otium.onTimers(setTimers)
     return () => {
       active = false
       unsubscribe()

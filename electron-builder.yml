@@ -1,6 +1,6 @@
-appId: local.pause.app
-productName: Pause
-copyright: Pause
+appId: local.otium.app
+productName: Otium
+copyright: Otium
 
 directories:
   output: release
@@ -17,7 +17,7 @@ npmRebuild: false
 
 mac:
   target:
-    - target: dir # a plain Pause.app folder, no installer
+    - target: dir # a plain Otium.app folder, no installer
   category: public.app-category.healthcare-fitness
   icon: build/icon.png
   # "-" = ad-hoc signature: free and local, not an Apple Developer ID (so still

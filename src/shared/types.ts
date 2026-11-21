@@ -60,8 +60,8 @@ export const IPC = {
   quit: 'app:quit'
 } as const
 
-/** What the panel can call. Exposed as `window.pause` by the preload script. */
-export interface PauseApi {
+/** What the panel can call. Exposed as `window.otium` by the preload script. */
+export interface OtiumApi {
   getTimers(): Promise<TimerSnapshot[]>
   timerAction(id: TimerId, action: TimerAction): Promise<void>
   onTimers(listener: (timers: TimerSnapshot[]) => void): () => void

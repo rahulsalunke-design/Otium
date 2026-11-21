@@ -1,8 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { IPC, type PauseApi, type TimerSnapshot } from '@shared/types'
+import { IPC, type OtiumApi, type TimerSnapshot } from '@shared/types'
 
 // The only doorway between the panel and the engine.
-const api: PauseApi = {
+const api: OtiumApi = {
   getTimers: () => ipcRenderer.invoke(IPC.getTimers),
   timerAction: (id, action) => ipcRenderer.invoke(IPC.timerAction, id, action),
   onTimers: (listener) => {
@@ -16,4 +16,4 @@ const api: PauseApi = {
   quit: () => ipcRenderer.send(IPC.quit)
 }
 
-contextBridge.exposeInMainWorld('pause', api)
+contextBridge.exposeInMainWorld('otium', api)

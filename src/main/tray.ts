@@ -52,7 +52,7 @@ export function createTray(): { tray: Tray; panel: BrowserWindow; showPanel: () 
   icon.setTemplateImage(true) // macOS colours it to match the menu bar
 
   const tray = new Tray(icon)
-  tray.setToolTip('Pause')
+  tray.setToolTip('Otium')
 
   // Clicking the icon while the panel is open first blurs (hides) the panel,
   // then fires the click. Remember when we hid so that click doesn't reopen it.
@@ -89,9 +89,9 @@ export function createTray(): { tray: Tray; panel: BrowserWindow; showPanel: () 
   }
 
   const menu = Menu.buildFromTemplate([
-    { label: 'Open Pause', click: showPanel },
+    { label: 'Open Otium', click: showPanel },
     { type: 'separator' },
-    { label: 'Quit Pause', accelerator: 'Command+Q', click: () => app.quit() }
+    { label: 'Quit Otium', accelerator: 'Command+Q', click: () => app.quit() }
   ])
 
   tray.on('click', togglePanel)

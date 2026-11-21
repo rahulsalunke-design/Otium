@@ -15,7 +15,7 @@ export function App() {
   useLayoutEffect(() => {
     const el = rootRef.current
     if (!el) return
-    const observer = new ResizeObserver(() => window.pause.resizePanel(el.offsetHeight))
+    const observer = new ResizeObserver(() => window.otium.resizePanel(el.offsetHeight))
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
@@ -25,7 +25,7 @@ export function App() {
       <header className="header">
         {view === 'timers' ? (
           <>
-            <h1 className="wordmark">Pause</h1>
+            <h1 className="wordmark">Otium</h1>
             <button
               type="button"
               className="icon-button"
@@ -57,7 +57,7 @@ export function App() {
         {view === 'timers' ? (
           <div className="cards">
             {timers.map((t) => (
-              <TimerCard key={t.id} timer={t} onAction={(action) => window.pause.timerAction(t.id, action)} />
+              <TimerCard key={t.id} timer={t} onAction={(action) => window.otium.timerAction(t.id, action)} />
             ))}
           </div>
         ) : (
@@ -66,8 +66,8 @@ export function App() {
       </main>
 
       <footer className="footer">
-        <button type="button" className="text-button muted" onClick={() => window.pause.quit()}>
-          Quit Pause
+        <button type="button" className="text-button muted" onClick={() => window.otium.quit()}>
+          Quit Otium
         </button>
       </footer>
     </div>

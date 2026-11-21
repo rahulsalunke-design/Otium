@@ -6,7 +6,7 @@ import { createNotifier } from './notifier'
 import { registerIpc } from './ipc'
 import { getDurations } from './store'
 
-// Only one copy of Pause at a time.
+// Only one copy of Otium at a time.
 if (!app.requestSingleInstanceLock()) {
   app.quit()
 } else {
@@ -37,6 +37,6 @@ if (!app.requestSingleInstanceLock()) {
     app.on('before-quit', () => engine.stop())
   })
 
-  // Closing the panel never quits the app; only "Quit Pause" does.
+  // Closing the panel never quits the app; only "Quit Otium" does.
   app.on('window-all-closed', () => {})
 }
