@@ -1,0 +1,19 @@
+import { useEffect, useState } from 'react'
+import type { TimerSnapshot } from '@shared/types'
+
+/** Live timer data pushed from the engine (about once a second while the panel is open). */
+export function useTimers(): TimerSnapshot[] {
+  const [timers, setTimers] = useState<TimerSnapshot[]>([])
+
+  useEffect(() => {
+    let active = true
+    window.pause.getTimers().then((t) => active && setTimers(t))
+    const unsubscribe = window.pause.onTimers(setTimers)
+    return () => {
+      active = false
+      unsubscribe()
+    }
+  }, [])
+
+  return timers
+}

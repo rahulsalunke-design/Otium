@@ -1,0 +1,351 @@
+/* Calm palette: neutral greys plus one sage accent. Follows the Mac's light/dark setting. */
+:root {
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --border: #e7e7e3;
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --faint: #a1a1a6;
+  --track: #ecece8;
+  --accent: #4f7f6f;
+  --accent-hover: #44705f;
+  --accent-text: #ffffff;
+  --accent-soft: rgba(79, 127, 111, 0.12);
+  --danger: #b4533f;
+  --hover: rgba(0, 0, 0, 0.05);
+  --focus: rgba(79, 127, 111, 0.45);
+
+  color-scheme: light dark;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1e;
+    --surface: #262628;
+    --border: #333336;
+    --text: #f2f2f2;
+    --muted: #98989d;
+    --faint: #6a6a6f;
+    --track: #38383b;
+    --accent: #7fb09f;
+    --accent-hover: #91bfae;
+    --accent-text: #13201c;
+    --accent-soft: rgba(127, 176, 159, 0.16);
+    --danger: #e08a76;
+    --hover: rgba(255, 255, 255, 0.07);
+    --focus: rgba(127, 176, 159, 0.5);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  overflow: hidden;
+  user-select: none;
+  cursor: default;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: 0;
+  background: none;
+  padding: 0;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+/* Layout */
+.panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 12px 8px 16px;
+}
+
+.wordmark {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.header-title {
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+  text-align: center;
+}
+
+.header-spacer {
+  width: 28px;
+}
+
+main {
+  padding: 0 12px;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-start;
+  padding: 8px 16px 12px;
+}
+
+/* Timer cards */
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 12px 10px 14px;
+}
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.card-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.card h2 {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.every {
+  color: var(--faint);
+  font-size: 12px;
+}
+
+.card-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.countdown {
+  font-size: 30px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  margin: 0 0 8px;
+  line-height: 1.1;
+}
+
+.card.is-idle .countdown {
+  color: var(--muted);
+}
+
+.progress {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  transform-origin: left center;
+  transition: transform 1s linear;
+}
+
+.card.is-idle .progress-fill {
+  background: var(--faint);
+}
+
+.card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 20px;
+  margin-top: 8px;
+}
+
+.status {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* Buttons */
+.icon-button {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: inline-grid;
+  place-items: center;
+  color: var(--muted);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.icon-button:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.icon-button.primary {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.icon-button.primary:hover {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.text-button {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  padding: 2px 6px;
+  margin: -2px -6px;
+  border-radius: 6px;
+}
+
+.text-button:hover {
+  background: var(--accent-soft);
+}
+
+.text-button.muted {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.text-button.muted:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.button {
+  height: 28px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.button:hover {
+  background: var(--hover);
+}
+
+.button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.button.primary:hover {
+  background: var(--accent-hover);
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* Settings */
+.settings {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings-intro {
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.field-label {
+  font-weight: 500;
+}
+
+.field-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.field input {
+  width: 64px;
+  height: 28px;
+  padding: 0 8px;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  user-select: text;
+}
+
+.field.has-error input {
+  border-color: var(--danger);
+}
+
+.unit {
+  color: var(--muted);
+  width: 24px;
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--faint);
+}
+
+.hint.is-error {
+  color: var(--danger);
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}

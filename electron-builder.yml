@@ -1,0 +1,30 @@
+appId: local.pause.app
+productName: Pause
+copyright: Pause
+
+directories:
+  output: release
+  buildResources: build
+
+# Only the compiled app and its icons go into the bundle (dependencies are added automatically).
+files:
+  - out/**
+  - resources/**
+  - package.json
+
+asar: true
+npmRebuild: false
+
+mac:
+  target:
+    - target: dir # a plain Pause.app folder, no installer
+  category: public.app-category.healthcare-fitness
+  icon: build/icon.png
+  # "-" = ad-hoc signature: free and local, not an Apple Developer ID (so still
+  # "unsigned" for distribution). It keeps the bundle valid on Apple Silicon.
+  identity: '-'
+  # Hardened runtime is only needed for Apple notarization, and can block an ad-hoc app from launching.
+  hardenedRuntime: false
+  extendInfo:
+    # Menu bar only: no dock icon, no app switcher entry.
+    LSUIElement: true
