@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { LayoutGrid, List } from 'lucide-react'
 import type { PanelView } from '@shared/types'
 import { useTimers } from './hooks/useTimers'
@@ -46,6 +46,14 @@ export function App() {
     const observer = new ResizeObserver(report)
     parts.forEach((el) => observer.observe(el!))
     return () => observer.disconnect()
+  }, [])
+
+  // When the panel closes, let go of focus. Otherwise macOS hands focus back to
+  // the last clicked button on reopen and it shows a keyboard focus ring.
+  useEffect(() => {
+    const dropFocus = () => (document.activeElement as HTMLElement | null)?.blur()
+    window.addEventListener('blur', dropFocus)
+    return () => window.removeEventListener('blur', dropFocus)
   }, [])
 
   const choosePanelView = (next: PanelView) => {
