@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "electron-vite dev",
     "typecheck": "tsc --noEmit",
-    "build": "electron-vite build && electron-builder --mac --config electron-builder.yml"
+    "build": "electron-vite build && electron-builder --mac --config electron-builder.yml",
+    "icons": "electron scripts/export-icons.cjs"
   },
   "dependencies": {
     "electron-store": "^12.0.0",

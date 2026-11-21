@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="150 150 724 724">
+  
+  <defs>
+    <mask id="vein" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <rect width="1024" height="1024" fill="#fff"/>
+      <path d="M 512 372 L 512 676" stroke="#000" stroke-width="22" stroke-linecap="round" transform="rotate(38 512 512)"/>
+    </mask>
+  </defs>
+  <circle cx="512" cy="512" r="275" fill="none" stroke="rgba(0,0,0,0.38)" stroke-width="40"/>
+  <path mask="url(#vein)" fill="#000000" transform="rotate(38 512 512)" d="M 512 300 C 655 380 655 620 512 724 C 369 620 369 380 512 300 Z"/>
+</svg>

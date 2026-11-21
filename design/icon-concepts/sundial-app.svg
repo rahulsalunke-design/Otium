@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6E9A89"/><stop offset="1" stop-color="#3E6A5B"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.16"/><stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#sheen)"/>
+  
+  <path d="M 192.0 650.0 A 320 320 0 0 1 832.0 650.0" fill="none" stroke="#FFFFFF" stroke-width="34" stroke-linecap="round"/>
+  <line x1="192" y1="650" x2="832" y2="650" stroke="#FFFFFF" stroke-width="34" stroke-linecap="round"/>
+  <circle cx="258.9" cy="582.2" r="17" fill="rgba(255,255,255,0.32)"/><circle cx="311.3" cy="481.6" r="17" fill="rgba(255,255,255,0.32)"/><circle cx="401.3" cy="412.5" r="17" fill="rgba(255,255,255,0.32)"/><circle cx="512.0" cy="388.0" r="17" fill="rgba(255,255,255,0.32)"/><circle cx="622.7" cy="412.5" r="17" fill="rgba(255,255,255,0.32)"/><circle cx="712.7" cy="481.6" r="17" fill="rgba(255,255,255,0.32)"/><circle cx="765.1" cy="582.2" r="17" fill="rgba(255,255,255,0.32)"/>
+  <path d="M 488.4 668.5 L 373.5 472.7 L 535.6 631.5 Z" fill="#FFFFFF" fill-opacity="0.55"/>
+  <circle cx="512" cy="650" r="30" fill="#FFFFFF"/>
+  <circle cx="724.4" cy="378.1" r="52" fill="#FFFFFF"/>
+</svg>

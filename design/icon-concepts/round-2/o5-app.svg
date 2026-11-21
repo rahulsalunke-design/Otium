@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg-o5" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6E9A89"/><stop offset="1" stop-color="#3E6A5B"/>
+    </linearGradient>
+    <linearGradient id="sheen-o5" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.16"/><stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg-o5)"/>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#sheen-o5)"/>
+  
+  <defs><clipPath id="in-o5"><circle cx="512" cy="512" r="218"/></clipPath></defs>
+  <circle cx="512" cy="512" r="250" fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="50"/>
+  <path d="M 512.0 262.0 A 250 250 0 1 1 262.0 512.0" fill="none" stroke="#FFFFFF" stroke-width="50" stroke-linecap="round"/>
+  <g clip-path="url(#in-o5)">
+    <path d="M 402 568 A 110 110 0 0 1 622 568 Z" fill="#FFFFFF"/>
+    <line x1="280" y1="568" x2="744" y2="568" stroke="#FFFFFF" stroke-width="28" stroke-linecap="round"/>
+    <line x1="430" y1="630" x2="594" y2="630" stroke="rgba(255,255,255,0.32)" stroke-width="24" stroke-linecap="round"/>
+  </g>
+</svg>

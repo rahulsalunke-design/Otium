@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="150 150 724 724">
+  
+  <path d="M 362 600 A 150 150 0 0 1 662 600 Z" fill="#000000"/>
+  <line x1="332.2" y1="512.3" x2="276.5" y2="485.1" stroke="#000000" stroke-width="34" stroke-linecap="round"/><line x1="406.0" y1="430.4" x2="373.2" y2="377.8" stroke="#000000" stroke-width="34" stroke-linecap="round"/><line x1="512.0" y1="400.0" x2="512.0" y2="338.0" stroke="#000000" stroke-width="34" stroke-linecap="round"/><line x1="618.0" y1="430.4" x2="650.8" y2="377.8" stroke="#000000" stroke-width="34" stroke-linecap="round"/><line x1="691.8" y1="512.3" x2="747.5" y2="485.1" stroke="#000000" stroke-width="34" stroke-linecap="round"/>
+  <line x1="236" y1="600" x2="788" y2="600" stroke="#000000" stroke-width="38" stroke-linecap="round"/>
+  <line x1="392" y1="684" x2="632" y2="684" stroke="rgba(0,0,0,0.38)" stroke-width="30" stroke-linecap="round"/>
+</svg>

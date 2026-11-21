@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Otium app icon: "Orbit × Dusk". The ring is the day passing; the sun sets
+       on the horizon inside it: time to step away. macOS 1024 grid (824 body). -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6E9A89"/>
+      <stop offset="1" stop-color="#3E6A5B"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.16"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="inside"><circle cx="512" cy="512" r="218"/></clipPath>
+  </defs>
+
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#sheen)"/>
+
+  <!-- the day: a faint full ring, three quarters done -->
+  <circle cx="512" cy="512" r="250" fill="none" stroke="#FFFFFF" stroke-opacity="0.32" stroke-width="50"/>
+  <path d="M 512 262 A 250 250 0 1 1 262 512" fill="none" stroke="#FFFFFF" stroke-width="50" stroke-linecap="round"/>
+
+  <!-- dusk: the sun on the horizon, with its reflection -->
+  <g clip-path="url(#inside)">
+    <path d="M 402 568 A 110 110 0 0 1 622 568 Z" fill="#FFFFFF"/>
+    <line x1="322" y1="568" x2="702" y2="568" stroke="#FFFFFF" stroke-width="28" stroke-linecap="round"/>
+    <line x1="430" y1="630" x2="594" y2="630" stroke="#FFFFFF" stroke-opacity="0.32" stroke-width="24" stroke-linecap="round"/>
+  </g>
+</svg>
