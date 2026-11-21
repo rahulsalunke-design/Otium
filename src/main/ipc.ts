@@ -1,7 +1,8 @@
 import { BrowserWindow, app, ipcMain } from 'electron'
-import { IPC, type TimerAction } from '@shared/types'
+import { IPC, SOUND_IDS, type SoundId, type TimerAction } from '@shared/types'
 import type { TimerEngine } from './timers'
 import { getReminders, saveReminders } from './store'
+import { playSound } from './sounds'
 
 const ACTIONS: TimerAction[] = ['start', 'pause', 'reset', 'snooze']
 const MAX_PANEL_HEIGHT = 640
@@ -21,6 +22,10 @@ export function registerIpc(engine: TimerEngine, panel: BrowserWindow): void {
     const reminders = saveReminders(input)
     engine.setReminders(reminders)
     return reminders
+  })
+
+  ipcMain.on(IPC.previewSound, (_e, sound: unknown) => {
+    if (SOUND_IDS.includes(sound as SoundId)) playSound(sound as SoundId)
   })
 
   ipcMain.on(IPC.resizePanel, (_e, height: unknown) => {

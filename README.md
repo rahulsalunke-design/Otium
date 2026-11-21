@@ -12,6 +12,8 @@ It comes with three built-in reminders:
 
 In **Settings** you can switch any of them off, change how often each one comes up, and **add your own** (for example "Stretch" every 30 minutes or "Take a walk" every 90), up to 10 reminders in total. Your own reminders can be renamed or deleted; the built-in ones can only be switched off. Everything is saved between launches.
 
+Each reminder also has its own **sound**, picked from four calm sounds made for Otium (**Chime**, **Droplet**, **Rise** and **Bowl**) or **None** for silence. Choosing a sound plays it, and the ▶ button plays it again. By default, Stand up uses Rise, Water uses Droplet, Eye break uses Bowl, and your own reminders use Chime. For now, sounds play even when a macOS Focus mode is on.
+
 Each switched-on reminder has its own timer with start, pause and reset. When a timer runs out, you get a macOS notification and the timer starts again by itself. If now isn't a good moment, **Snooze 5 min** (in the notification, or on the timer card for 10 minutes after a reminder).
 
 Otium lives only in the menu bar: no dock icon. Click the icon to open the panel, and click anywhere else to close it. Right-click the icon (or use the link at the bottom of the panel) to quit.
@@ -59,6 +61,7 @@ src/
 │   ├── index.ts           Startup: hides the dock icon, wires everything together
 │   ├── timers.ts          One timer per switched-on reminder (stores the end time, so sleep doesn't throw it off)
 │   ├── notifier.ts        macOS notifications and the Snooze button
+│   ├── sounds.ts          Plays reminder sounds with macOS's built-in afplay
 │   ├── tray.ts            Menu bar icon and the panel window under it
 │   ├── store.ts           Saved reminders (electron-store), checked and cleaned on every save
 │   └── ipc.ts             Answers requests from the panel
@@ -69,7 +72,8 @@ src/
         ├── components/    TimerCard, Settings, Icons
         ├── hooks/         useTimers: live data from the engine
         └── styles.css     Colours (light and dark), type, layout
-resources/                 Menu bar icon (template images that macOS colours for you)
+resources/                 Menu bar icon (template images that macOS colours for you) and sounds/
+scripts/make-sounds.py     Creates the four reminder sounds (original, MIT licensed): python3 scripts/make-sounds.py
 build/icon.png             App icon used when packaging
 ```
 

@@ -3,6 +3,19 @@
 export type TimerStatus = 'running' | 'paused' | 'stopped'
 export type TimerAction = 'start' | 'pause' | 'reset' | 'snooze'
 
+/** Otium's own sounds (made by scripts/make-sounds.py), plus silence. */
+export const SOUNDS = [
+  { id: 'chime', label: 'Chime' },
+  { id: 'droplet', label: 'Droplet' },
+  { id: 'rise', label: 'Rise' },
+  { id: 'bowl', label: 'Bowl' },
+  { id: 'none', label: 'None' }
+] as const
+export type SoundId = (typeof SOUNDS)[number]['id']
+export const SOUND_IDS: readonly SoundId[] = SOUNDS.map((s) => s.id)
+/** Sound for reminders the user adds. */
+export const DEFAULT_SOUND: SoundId = 'chime'
+
 /** One reminder: a built-in one (stand, water, eyes) or one the user added. */
 export interface Reminder {
   id: string
@@ -12,12 +25,14 @@ export interface Reminder {
   enabled: boolean
   /** Built-in reminders can be switched off and retimed, but not renamed or deleted. */
   builtIn: boolean
+  /** Played when the reminder goes off. */
+  sound: SoundId
 }
 
 export const BUILT_IN_REMINDERS: Reminder[] = [
-  { id: 'stand', label: 'Stand up', minutes: 45, enabled: true, builtIn: true },
-  { id: 'water', label: 'Water', minutes: 60, enabled: true, builtIn: true },
-  { id: 'eyes', label: 'Eye break', minutes: 20, enabled: true, builtIn: true }
+  { id: 'stand', label: 'Stand up', minutes: 45, enabled: true, builtIn: true, sound: 'rise' },
+  { id: 'water', label: 'Water', minutes: 60, enabled: true, builtIn: true, sound: 'droplet' },
+  { id: 'eyes', label: 'Eye break', minutes: 20, enabled: true, builtIn: true, sound: 'bowl' }
 ]
 
 /** Notification text for the built-in reminders. Custom ones use their name. */
@@ -39,6 +54,7 @@ export interface TimerSnapshot {
   id: string
   label: string
   builtIn: boolean
+  sound: SoundId
   status: TimerStatus
   /** Full reminder length, in ms. */
   durationMs: number
@@ -59,6 +75,7 @@ export const IPC = {
   timersUpdate: 'timers:update',
   getReminders: 'reminders:get',
   setReminders: 'reminders:set',
+  previewSound: 'sound:preview',
   resizePanel: 'panel:resize',
   quit: 'app:quit'
 } as const
@@ -70,6 +87,7 @@ export interface OtiumApi {
   onTimers(listener: (timers: TimerSnapshot[]) => void): () => void
   getReminders(): Promise<Reminder[]>
   setReminders(reminders: Reminder[]): Promise<Reminder[]>
+  previewSound(sound: SoundId): void
   resizePanel(height: number): void
   quit(): void
 }

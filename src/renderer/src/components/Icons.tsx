@@ -47,6 +47,13 @@ export const TrashIcon = () => (
   </svg>
 )
 
+export const SpeakerIcon = () => (
+  <svg {...base} fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2.5 6.2v3.6h2.3L8 12.5v-9L4.8 6.2H2.5Z" fill="currentColor" />
+    <path d="M10.5 6a2.8 2.8 0 0 1 0 4M12.3 4.3a5.2 5.2 0 0 1 0 7.4" />
+  </svg>
+)
+
 export const BackIcon = () => (
   <svg {...base} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M10 3 5 8l5 5" />

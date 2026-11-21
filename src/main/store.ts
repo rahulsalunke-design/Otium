@@ -1,11 +1,14 @@
 import Store from 'electron-store'
 import {
   BUILT_IN_REMINDERS,
+  DEFAULT_SOUND,
   MAX_LABEL_LENGTH,
   MAX_MINUTES,
   MAX_REMINDERS,
   MIN_MINUTES,
-  type Reminder
+  SOUND_IDS,
+  type Reminder,
+  type SoundId
 } from '@shared/types'
 
 interface Settings {
@@ -24,6 +27,11 @@ const ID_PATTERN = /^[A-Za-z0-9-]{1,64}$/
 function cleanMinutes(value: unknown, fallback: number): number {
   const n = Math.round(Number(value))
   return Number.isFinite(n) ? Math.min(MAX_MINUTES, Math.max(MIN_MINUTES, n)) : fallback
+}
+
+/** Unknown or missing sounds (e.g. reminders saved before sounds existed) get the default. */
+function cleanSound(value: unknown, fallback: SoundId): SoundId {
+  return SOUND_IDS.includes(value as SoundId) ? (value as SoundId) : fallback
 }
 
 /**
@@ -45,7 +53,8 @@ export function cleanReminders(input: unknown): Reminder[] {
     return {
       ...def,
       minutes: cleanMinutes(saved?.minutes, def.minutes),
-      enabled: typeof saved?.enabled === 'boolean' ? saved.enabled : def.enabled
+      enabled: typeof saved?.enabled === 'boolean' ? saved.enabled : def.enabled,
+      sound: cleanSound(saved?.sound, def.sound)
     }
   })
 
@@ -60,7 +69,8 @@ export function cleanReminders(input: unknown): Reminder[] {
       label,
       minutes: cleanMinutes(item.minutes, 30),
       enabled: item.enabled !== false,
-      builtIn: false
+      builtIn: false,
+      sound: cleanSound(item.sound, DEFAULT_SOUND)
     })
   }
 

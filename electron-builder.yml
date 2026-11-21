@@ -13,6 +13,9 @@ files:
   - package.json
 
 asar: true
+# Sounds stay as real files so macOS's afplay can read them.
+asarUnpack:
+  - resources/sounds/**
 npmRebuild: false
 
 mac:

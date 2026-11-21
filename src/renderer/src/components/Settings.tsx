@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import {
+  DEFAULT_SOUND,
   MAX_LABEL_LENGTH,
   MAX_MINUTES,
   MAX_REMINDERS,
   MIN_MINUTES,
-  type Reminder
+  SOUNDS,
+  type Reminder,
+  type SoundId
 } from '@shared/types'
-import { PlusIcon, TrashIcon } from './Icons'
+import { PlayIcon, PlusIcon, SpeakerIcon, TrashIcon } from './Icons'
 
 interface Props {
   onDone: () => void
@@ -52,7 +55,7 @@ export function Settings({ onDone }: Props) {
 
   const add = () => {
     const id = crypto.randomUUID()
-    setDrafts([...drafts, { id, label: '', minutes: '30', enabled: true, builtIn: false }])
+    setDrafts([...drafts, { id, label: '', minutes: '30', enabled: true, builtIn: false, sound: DEFAULT_SOUND }])
     setFocusId(id)
   }
 
@@ -76,62 +79,97 @@ export function Settings({ onDone }: Props) {
     onDone()
   }
 
+  const chooseSound = (id: string, sound: SoundId) => {
+    update(id, { sound })
+    window.otium.previewSound(sound) // hear it as you pick it
+  }
+
   const row = (d: Draft) => (
     <li key={d.id} className={`reminder-row ${d.enabled ? '' : 'is-off'}`}>
-      <input
-        type="checkbox"
-        role="switch"
-        className="switch"
-        checked={d.enabled}
-        onChange={(e) => update(d.id, { enabled: e.target.checked })}
-        aria-label={`${d.label || 'New reminder'} on or off`}
-      />
-
-      {d.builtIn ? (
-        <span className="reminder-name">{d.label}</span>
-      ) : (
+      <div className="reminder-main">
         <input
-          ref={(el) => {
-            if (el) nameRefs.current.set(d.id, el)
-            else nameRefs.current.delete(d.id)
-          }}
-          type="text"
-          className={`name-input ${badName(d) ? 'is-invalid' : ''}`}
-          value={d.label}
-          maxLength={MAX_LABEL_LENGTH}
-          placeholder="Name, e.g. Stretch"
-          onChange={(e) => update(d.id, { label: e.target.value })}
-          aria-label="Reminder name"
-          aria-invalid={badName(d)}
+          type="checkbox"
+          role="switch"
+          className="switch"
+          checked={d.enabled}
+          onChange={(e) => update(d.id, { enabled: e.target.checked })}
+          aria-label={`${d.label || 'New reminder'} on or off`}
         />
-      )}
 
-      <input
-        type="number"
-        inputMode="numeric"
-        className={`minutes-input ${badMinutes(d) ? 'is-invalid' : ''}`}
-        min={MIN_MINUTES}
-        max={MAX_MINUTES}
-        step={1}
-        value={d.minutes}
-        onChange={(e) => update(d.id, { minutes: e.target.value })}
-        aria-label={`${d.label || 'New reminder'} interval in minutes`}
-        aria-invalid={badMinutes(d)}
-      />
+        {d.builtIn ? (
+          <span className="reminder-name">{d.label}</span>
+        ) : (
+          <input
+            ref={(el) => {
+              if (el) nameRefs.current.set(d.id, el)
+              else nameRefs.current.delete(d.id)
+            }}
+            type="text"
+            className={`name-input ${badName(d) ? 'is-invalid' : ''}`}
+            value={d.label}
+            maxLength={MAX_LABEL_LENGTH}
+            placeholder="Name, e.g. Stretch"
+            onChange={(e) => update(d.id, { label: e.target.value })}
+            aria-label="Reminder name"
+            aria-invalid={badName(d)}
+          />
+        )}
 
-      {d.builtIn ? (
-        <span className="row-action-spacer" />
-      ) : (
+        <input
+          type="number"
+          inputMode="numeric"
+          className={`minutes-input ${badMinutes(d) ? 'is-invalid' : ''}`}
+          min={MIN_MINUTES}
+          max={MAX_MINUTES}
+          step={1}
+          value={d.minutes}
+          onChange={(e) => update(d.id, { minutes: e.target.value })}
+          aria-label={`${d.label || 'New reminder'} interval in minutes`}
+          aria-invalid={badMinutes(d)}
+        />
+
+        {d.builtIn ? (
+          <span className="row-action-spacer" />
+        ) : (
+          <button
+            type="button"
+            className="icon-button small"
+            onClick={() => remove(d.id)}
+            aria-label={`Delete ${d.label || 'new reminder'}`}
+            title="Delete"
+          >
+            <TrashIcon />
+          </button>
+        )}
+      </div>
+
+      <div className="sound-line">
+        <span className="sound-icon" aria-hidden="true">
+          <SpeakerIcon />
+        </span>
+        <select
+          className="sound-select"
+          value={d.sound}
+          onChange={(e) => chooseSound(d.id, e.target.value as SoundId)}
+          aria-label={`${d.label || 'New reminder'} sound`}
+        >
+          {SOUNDS.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.label}
+            </option>
+          ))}
+        </select>
         <button
           type="button"
-          className="icon-button small"
-          onClick={() => remove(d.id)}
-          aria-label={`Delete ${d.label || 'new reminder'}`}
-          title="Delete"
+          className="icon-button small play"
+          onClick={() => window.otium.previewSound(d.sound)}
+          disabled={d.sound === 'none'}
+          aria-label={`Play ${d.label || 'new reminder'} sound`}
+          title="Play"
         >
-          <TrashIcon />
+          <PlayIcon />
         </button>
-      )}
+      </div>
     </li>
   )
 

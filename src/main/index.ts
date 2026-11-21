@@ -4,6 +4,7 @@ import { createTray } from './tray'
 import { createNotifier } from './notifier'
 import { registerIpc } from './ipc'
 import { getReminders } from './store'
+import { playSound } from './sounds'
 
 // Only one copy of Otium at a time.
 if (!app.requestSingleInstanceLock()) {
@@ -25,7 +26,10 @@ if (!app.requestSingleInstanceLock()) {
       },
       onClick: showPanel
     })
-    engine.on('fired', (timer) => notify(timer))
+    engine.on('fired', (timer) => {
+      notify(timer)
+      playSound(timer.sound)
+    })
     // v2: a full-screen break overlay would also listen to 'fired' here.
 
     registerIpc(engine, panel)

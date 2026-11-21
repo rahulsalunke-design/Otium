@@ -27,7 +27,8 @@ export function createNotifier({ onSnooze, onClick }: NotifierOptions) {
     live.get(id)?.close()
     const n = new Notification({
       ...copyFor(timer),
-      silent: false,
+      // Otium plays its own sound (see sounds.ts), so the notification itself stays quiet.
+      silent: true,
       actions: [{ type: 'button', text: `Snooze ${SNOOZE_MINUTES} min` }]
     })
     n.on('action', () => onSnooze(id))
