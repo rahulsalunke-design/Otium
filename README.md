@@ -18,7 +18,7 @@ Each reminder also has its own **sound**, picked from four calm sounds made for 
 
 The panel has two views, switched with the buttons at the top:
 
-- **List**: a full card for each reminder, with the exact countdown, start/pause/reset, and when it comes up next.
+- **List**: one compact row per reminder: a small ring gauge with its icon, the name, the exact countdown and pause/play. Hover a row to see how often it repeats and to Snooze it; hover the ring to Reset. A row glows briefly when its reminder goes off.
 - **Glance**: a compact grid of rings, one per reminder. Each ring empties like a clock as the time runs down, with its icon in the middle and the time left in minutes. Hover over a ring to pause or start it.
 
 Otium remembers which view you used last.
@@ -58,6 +58,7 @@ The app is **unsigned** (not signed with an Apple Developer ID). It runs fine on
 | Command | What it does |
 | --- | --- |
 | `npm run typecheck` | Checks the TypeScript for mistakes without building |
+| `npm run icons` | Re-exports the app icon and menu bar icon from the SVGs in `design/app-icon/` |
 
 ## How it's put together
 
@@ -78,11 +79,14 @@ src/
 └── renderer/              The panel (React)
     └── src/
         ├── App.tsx        Header, timer list or settings, footer
-        ├── components/    TimerCard (List view), GlanceView, Settings, ReminderIcon, Icons
+        ├── components/    ListView, GlanceView, Settings, ReminderIcon, Icons
         ├── lib/time.ts    Countdown and minutes formatting shared by both views
         ├── hooks/         useTimers: live data from the engine
         └── styles.css     Colours (light and dark), type, layout
 resources/                 Menu bar icon (template images that macOS colours for you) and sounds/
+design/app-icon/           Source SVGs for the app icon and the simplified menu bar icon
+design/icon-concepts/      Icon exploration: round 1 (six concepts) and round 2 (Orbit and Dusk variations)
+design/list-concepts/      List view exploration: layout sheets and the interactive prototype (prototype.html)
 scripts/make-sounds.py     Creates the four reminder sounds (original, MIT licensed): python3 scripts/make-sounds.py
 build/icon.png             App icon used when packaging
 ```

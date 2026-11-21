@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { LayoutGrid, List } from 'lucide-react'
 import type { PanelView } from '@shared/types'
 import { useTimers } from './hooks/useTimers'
-import { TimerCard } from './components/TimerCard'
+import { ListView } from './components/ListView'
 import { GlanceView } from './components/GlanceView'
 import { Settings } from './components/Settings'
 import { BackIcon, PowerIcon, SettingsIcon } from './components/Icons'
@@ -152,11 +152,7 @@ export function App() {
           ) : panelView === 'glance' ? (
             <GlanceView timers={timers} onAction={(id, action) => window.otium.timerAction(id, action)} />
           ) : (
-            <div className="cards">
-              {timers.map((t) => (
-                <TimerCard key={t.id} timer={t} onAction={(action) => window.otium.timerAction(t.id, action)} />
-              ))}
-            </div>
+            <ListView timers={timers} onAction={(id, action) => window.otium.timerAction(id, action)} />
           )}
         </div>
       </main>
