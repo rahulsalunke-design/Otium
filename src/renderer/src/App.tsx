@@ -1,13 +1,15 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { LayoutGrid, List } from 'lucide-react'
-import type { PanelView } from '@shared/types'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { LayoutGrid, List, Palette, Pencil } from 'lucide-react'
+import { DEFAULT_APPEARANCE, themeForTime, type Appearance, type PanelView } from '@shared/types'
 import { useTimers } from './hooks/useTimers'
 import { ListView } from './components/ListView'
 import { GlanceView } from './components/GlanceView'
-import { Settings } from './components/Settings'
-import { BackIcon, PowerIcon, SettingsIcon } from './components/Icons'
+import { ReminderEditor, type EditorApi } from './components/ReminderEditor'
+import { AppearanceSection } from './components/AppearanceSection'
+import { BackIcon, PowerIcon } from './components/Icons'
 
-type View = 'timers' | 'settings'
+/** timers: the main panel · edit: Edit reminders · appearance: the look. */
+type View = 'timers' | 'edit' | 'appearance'
 
 const VIEW_KEY = 'otium.panelView'
 
@@ -28,12 +30,52 @@ function savePanelView(view: PanelView): void {
   }
 }
 
+/** Puts the appearance on <html> so the theme and Glass styles apply. */
+function applyAppearance(a: Appearance, now: Date): void {
+  const root = document.documentElement
+  root.dataset.theme = a.theme === 'follow-day' ? themeForTime(now) : a.theme
+  if (a.glass) root.dataset.glass = ''
+  else delete root.dataset.glass
+}
+
+const ICON = { size: 15, strokeWidth: 1.75, 'aria-hidden': true } as const
+
 export function App() {
   const timers = useTimers()
   const [view, setView] = useState<View>('timers')
   const [panelView, setPanelView] = useState<PanelView>(loadPanelView)
+  const [appearance, setAppearance] = useState<Appearance>(DEFAULT_APPEARANCE)
+  const [minute, setMinute] = useState(() => Math.floor(Date.now() / 60_000))
+  const editorApi = useRef<EditorApi | null>(null)
+  const [editorOk, setEditorOk] = useState(true)
   const headerRef = useRef<HTMLElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    window.otium.getAppearance().then(setAppearance)
+  }, [])
+
+  // "Follow the day" re-checks the time every minute.
+  useEffect(() => {
+    const id = setInterval(() => setMinute(Math.floor(Date.now() / 60_000)), 15_000)
+    return () => clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    applyAppearance(appearance, new Date())
+  }, [appearance, minute])
+
+  // Appearance changes apply and save straight away.
+  const changeAppearance = (a: Appearance) => {
+    setAppearance(a)
+    window.otium.setAppearance(a)
+  }
+
+  const finishEditing = async () => {
+    if (await editorApi.current?.save()) setView('timers')
+  }
+
+  const onValidityChange = useCallback((ok: boolean) => setEditorOk(ok), [])
 
   // Fit the window to whatever is showing. Measures the full content height
   // (not the visible part), so the window can grow back after it was capped
@@ -100,53 +142,91 @@ export function App() {
     </button>
   )
 
+  let header
+  if (view === 'edit') {
+    header = (
+      <>
+        <button type="button" className="text-button header-text-btn" onClick={() => setView('timers')}>
+          Cancel
+        </button>
+        <h1 className="header-title">Edit reminders</h1>
+        <button
+          type="button"
+          className="text-button header-text-btn is-strong"
+          onClick={finishEditing}
+          disabled={!editorOk}
+        >
+          Done
+        </button>
+      </>
+    )
+  } else if (view === 'appearance') {
+    header = (
+      <>
+        <button
+          type="button"
+          className="icon-button"
+          onClick={() => setView('timers')}
+          aria-label="Back to timers"
+          title="Back"
+        >
+          <BackIcon />
+        </button>
+        <h1 className="header-title">Appearance</h1>
+        {quitButton}
+      </>
+    )
+  } else {
+    header = (
+      <>
+        <h1 className="wordmark">Otium</h1>
+        <div className="header-actions">
+          {viewToggle}
+          <button
+            type="button"
+            className="icon-button"
+            onClick={() => setView('edit')}
+            aria-label="Edit reminders"
+            title="Edit reminders"
+          >
+            <Pencil {...ICON} size={14} />
+          </button>
+          <button
+            type="button"
+            className="icon-button"
+            onClick={() => setView('appearance')}
+            aria-label="Appearance"
+            title="Appearance"
+          >
+            <Palette {...ICON} />
+          </button>
+          {quitButton}
+        </div>
+      </>
+    )
+  }
+
   return (
     <div className="panel">
       <header className="header" ref={headerRef}>
-        {view === 'timers' ? (
-          <>
-            <h1 className="wordmark">Otium</h1>
-            <div className="header-actions">
-              {viewToggle}
-              <button
-                type="button"
-                className="icon-button"
-                onClick={() => setView('settings')}
-                aria-label="Settings"
-                title="Settings"
-              >
-                <SettingsIcon />
-              </button>
-              {quitButton}
-            </div>
-          </>
-        ) : (
-          <>
-            <button
-              type="button"
-              className="icon-button"
-              onClick={() => setView('timers')}
-              aria-label="Back to timers"
-              title="Back"
-            >
-              <BackIcon />
-            </button>
-            <h1 className="header-title">Settings</h1>
-            {quitButton}
-          </>
-        )}
+        {header}
       </header>
 
       <main className="scroll">
         <div className="content" ref={contentRef}>
-          {view === 'settings' ? (
-            <Settings onDone={() => setView('timers')} />
+          {view === 'edit' ? (
+            <ReminderEditor apiRef={editorApi} onValidityChange={onValidityChange} />
+          ) : view === 'appearance' ? (
+            <div className="appearance-card">
+              <AppearanceSection value={appearance} onChange={changeAppearance} />
+              <p className="hint">Changes apply straight away.</p>
+            </div>
           ) : timers === null ? null : timers.length === 0 ? (
             <div className="empty">
               <p className="empty-title">All reminders are off</p>
-              <p className="empty-body">Switch some on, or add your own, in Settings.</p>
-              <button type="button" className="button" onClick={() => setView('settings')}>
-                Open Settings
+              <p className="empty-body">Switch some on, or add your own.</p>
+              <button type="button" className="button" onClick={() => setView('edit')}>
+                Edit reminders
               </button>
             </div>
           ) : panelView === 'glance' ? (

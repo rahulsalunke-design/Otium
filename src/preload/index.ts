@@ -13,6 +13,8 @@ const api: OtiumApi = {
   getReminders: () => ipcRenderer.invoke(IPC.getReminders),
   setReminders: (reminders) => ipcRenderer.invoke(IPC.setReminders, reminders),
   previewSound: (sound) => ipcRenderer.send(IPC.previewSound, sound),
+  getAppearance: () => ipcRenderer.invoke(IPC.getAppearance),
+  setAppearance: (appearance) => ipcRenderer.invoke(IPC.setAppearance, appearance),
   resizePanel: (height) => ipcRenderer.send(IPC.resizePanel, height),
   quit: () => ipcRenderer.send(IPC.quit)
 }

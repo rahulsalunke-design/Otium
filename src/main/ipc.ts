@@ -1,7 +1,8 @@
 import { BrowserWindow, app, ipcMain } from 'electron'
 import { IPC, SOUND_IDS, type SoundId, type TimerAction } from '@shared/types'
 import type { TimerEngine } from './timers'
-import { getReminders, saveReminders } from './store'
+import { getAppearance, getReminders, saveAppearance, saveReminders } from './store'
+import { setGlass } from './tray'
 import { playSound } from './sounds'
 
 const ACTIONS: TimerAction[] = ['start', 'pause', 'reset', 'snooze']
@@ -22,6 +23,14 @@ export function registerIpc(engine: TimerEngine, panel: BrowserWindow): void {
     const reminders = saveReminders(input)
     engine.setReminders(reminders)
     return reminders
+  })
+
+  ipcMain.handle(IPC.getAppearance, () => getAppearance())
+
+  ipcMain.handle(IPC.setAppearance, (_e, input: unknown) => {
+    const appearance = saveAppearance(input)
+    setGlass(panel, appearance.glass)
+    return appearance
   })
 
   ipcMain.on(IPC.previewSound, (_e, sound: unknown) => {

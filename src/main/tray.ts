@@ -3,6 +3,8 @@ import { readFileSync } from 'node:fs'
 import { BrowserWindow, Menu, Tray, app, nativeImage, nativeTheme, screen, shell } from 'electron'
 import trayIcon from '../../resources/trayTemplate.png?asset'
 import trayIcon2x from '../../resources/trayTemplate@2x.png?asset'
+import { getOpenAtLogin } from './store'
+import { setOpenAtLogin } from './login'
 
 const PANEL_WIDTH = 320
 const INITIAL_HEIGHT = 460
@@ -30,7 +32,9 @@ export function createTray(): { tray: Tray; panel: BrowserWindow; showPanel: () 
       sandbox: true,
       contextIsolation: true,
       nodeIntegration: false
-    }
+    },
+    // Keep the Glass blur looking active even when the panel isn't focused.
+    visualEffectState: 'active'
   })
   panel.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
 
@@ -88,14 +92,38 @@ export function createTray(): { tray: Tray; panel: BrowserWindow; showPanel: () 
     else if (Date.now() - hiddenAt > 250) showPanel()
   }
 
-  const menu = Menu.buildFromTemplate([
-    { label: 'Open Otium', click: showPanel },
-    { type: 'separator' },
-    { label: 'Quit Otium', accelerator: 'Command+Q', click: () => app.quit() }
-  ])
+  // Built each time it opens, so the Open at Login tick is always current.
+  const buildMenu = () =>
+    Menu.buildFromTemplate([
+      { label: 'Open Otium', click: showPanel },
+      { type: 'separator' },
+      {
+        label: 'Open at Login',
+        type: 'checkbox',
+        checked: getOpenAtLogin(),
+        enabled: app.isPackaged, // only the installed app can start at login
+        click: (item) => setOpenAtLogin(item.checked)
+      },
+      { type: 'separator' },
+      { label: 'Quit Otium', accelerator: 'Command+Q', click: () => app.quit() }
+    ])
 
   tray.on('click', togglePanel)
-  tray.on('right-click', () => tray.popUpContextMenu(menu))
+  tray.on('right-click', () => tray.popUpContextMenu(buildMenu()))
 
   return { tray, panel, showPanel }
+}
+
+/**
+ * Glass: macOS's own frosted blur behind the panel (like Control Center).
+ * The page then draws its colours semi-transparently on top.
+ */
+export function setGlass(panel: BrowserWindow, on: boolean): void {
+  if (on) {
+    panel.setBackgroundColor('#00000000')
+    panel.setVibrancy('popover')
+  } else {
+    panel.setVibrancy(null)
+    panel.setBackgroundColor(nativeTheme.shouldUseDarkColors ? '#1c1c1e' : '#f7f7f5')
+  }
 }

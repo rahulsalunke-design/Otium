@@ -10,9 +10,9 @@ It comes with three built-in reminders:
 - **Water**: every 60 minutes
 - **Eye break (20-20-20)**: every 20 minutes. Look at something 20 feet away for 20 seconds.
 
-In **Settings** you can switch any of them off, change how often each one comes up, and **add your own** (for example "Stretch" every 30 minutes or "Take a walk" every 90), up to 10 reminders in total. Your own reminders can be renamed or deleted; the built-in ones can only be switched off. Everything is saved between launches.
+Click **✎ Edit reminders** in the panel's header to switch any of them off, change how often each one comes up, and **add your own** (for example "Stretch" every 30 minutes or "Take a walk" every 90), up to 10 reminders in total. Your own reminders can be renamed or deleted; the built-in ones can only be switched off. Each reminder is one compact line; click it to open its details (name, interval with − / +, sound, icon, delete) right there. **Done** saves, **Cancel** discards. Everything is saved between launches.
 
-Each reminder has an **icon** too: the built-in ones start with a standing person, a glass of water and an eye, and you can pick any of 21 icons (walk, breathe, coffee, medicine and more) for any reminder in Settings.
+Each reminder has an **icon** too: the built-in ones start with a standing person, a glass of water and an eye, and you can pick any of 21 icons (walk, breathe, coffee, medicine and more) for any reminder in Edit reminders.
 
 Each reminder also has its own **sound**, picked from four calm sounds made for Otium (**Chime**, **Droplet**, **Rise** and **Bowl**) or **None** for silence. Choosing a sound plays it, and the ▶ button plays it again. By default, Stand up uses Rise, Water uses Droplet, Eye break uses Bowl, and your own reminders use Chime. For now, sounds play even when a macOS Focus mode is on.
 
@@ -23,9 +23,15 @@ The panel has two views, switched with the buttons at the top:
 
 Otium remembers which view you used last.
 
+**Appearance** (the palette button in the header) changes the look straight away:
+
+- **Theme**: Sage (default), Dusk, Dawn, Travertine, Tide or Graphite. Each has a light and a dark version and follows your Mac's appearance.
+- **Follow day**: Dawn until 11:00, Sage until 17:00, then Dusk.
+- **Glass background**: a frosted, see-through panel using macOS's own blur.
+
 Each switched-on reminder has its own timer with start, pause and reset. When a timer runs out, you get a macOS notification and the timer starts again by itself. If now isn't a good moment, **Snooze 5 min** (in the notification, or on the timer card for 10 minutes after a reminder).
 
-Otium lives only in the menu bar: no dock icon. Click the icon to open the panel, and click anywhere else to close it. To quit, click the power button at the top right of the panel, or right-click the menu bar icon.
+Otium lives only in the menu bar: no dock icon. Click the icon to open the panel, and click anywhere else to close it. To quit, click the power button at the top right of the panel, or right-click the menu bar icon. Right-click the icon also has **Open at Login** (on by default), so Otium starts whenever you log in to your Mac.
 
 ## Requirements
 
@@ -49,7 +55,7 @@ While developing, notifications show as coming from "Electron". The first time, 
 npm run build
 ```
 
-This creates `release/mac-arm64/Otium.app` (or `release/mac/Otium.app` on Intel Macs). Drag it into Applications to install it.
+This creates `release/mac-arm64/Otium.app` (or `release/mac/Otium.app` on Intel Macs). Drag it into Applications to install it. Open at Login only works for the copy in Applications (the build folder is replaced on every build).
 
 The app is **unsigned** (not signed with an Apple Developer ID). It runs fine on the Mac that built it. If you send it to someone else, macOS will say it's from an unidentified developer; they can right-click it and choose **Open** the first time.
 
@@ -78,20 +84,22 @@ src/
 ├── preload/index.ts       The bridge: exposes window.otium to the panel
 └── renderer/              The panel (React)
     └── src/
-        ├── App.tsx        Header, timer list or settings, footer
-        ├── components/    ListView, GlanceView, Settings, ReminderIcon, Icons
+        ├── App.tsx        Header and the three screens: timers, Edit reminders, Appearance
+        ├── components/    ListView, GlanceView, ReminderEditor, AppearanceSection, ReminderIcon, Icons
         ├── lib/time.ts    Countdown and minutes formatting shared by both views
         ├── hooks/         useTimers: live data from the engine
-        └── styles.css     Colours (light and dark), type, layout
+        ├── styles.css     Colours (light and dark), type, layout
+        └── themes.css     The other colour themes, plus the Glass background
 resources/                 Menu bar icon (template images that macOS colours for you) and sounds/
 design/app-icon/           Source SVGs for the app icon and the simplified menu bar icon
 design/icon-concepts/      Icon exploration: round 1 (six concepts) and round 2 (Orbit and Dusk variations)
 design/list-concepts/      List view exploration: layout sheets and the interactive prototype (prototype.html)
+design/theme-concepts/     Theme exploration: palettes (themes.mjs), real-panel screenshots and the comparison sheet
 scripts/make-sounds.py     Creates the four reminder sounds (original, MIT licensed): python3 scripts/make-sounds.py
 build/icon.png             App icon used when packaging
 ```
 
-Settings are saved to `~/Library/Application Support/Otium/config.json`.
+Reminders and appearance are saved to `~/Library/Application Support/Otium/config.json`.
 
 ## Ideas for v2
 

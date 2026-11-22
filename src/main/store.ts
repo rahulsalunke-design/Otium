@@ -1,6 +1,10 @@
 import Store from 'electron-store'
 import {
   BUILT_IN_REMINDERS,
+  DEFAULT_APPEARANCE,
+  THEME_CHOICES,
+  type Appearance,
+  type ThemeChoice,
   DEFAULT_ICON,
   DEFAULT_SOUND,
   ICON_IDS,
@@ -16,13 +20,16 @@ import {
 
 interface Settings {
   reminders: Reminder[]
+  appearance: Appearance
+  /** Start Otium when you log in to your Mac (on by default). */
+  openAtLogin: boolean
   /** Old format (v1): minutes per built-in reminder. Migrated on first load. */
   durations?: Record<string, number>
 }
 
 // Saved as JSON in ~/Library/Application Support/Otium/config.json
 const store = new Store<Settings>({
-  defaults: { reminders: BUILT_IN_REMINDERS }
+  defaults: { reminders: BUILT_IN_REMINDERS, appearance: DEFAULT_APPEARANCE, openAtLogin: true }
 })
 
 const ID_PATTERN = /^[A-Za-z0-9-]{1,64}$/
@@ -107,4 +114,31 @@ export function saveReminders(input: unknown): Reminder[] {
   const reminders = cleanReminders(input)
   store.set('reminders', reminders)
   return reminders
+}
+
+/** Keeps the appearance settings to known values. */
+export function cleanAppearance(input: unknown): Appearance {
+  const a = (input && typeof input === 'object' ? input : {}) as Record<string, unknown>
+  return {
+    theme: THEME_CHOICES.includes(a.theme as ThemeChoice) ? (a.theme as ThemeChoice) : DEFAULT_APPEARANCE.theme,
+    glass: a.glass === true
+  }
+}
+
+export function getAppearance(): Appearance {
+  return cleanAppearance(store.get('appearance'))
+}
+
+export function saveAppearance(input: unknown): Appearance {
+  const appearance = cleanAppearance(input)
+  store.set('appearance', appearance)
+  return appearance
+}
+
+export function getOpenAtLogin(): boolean {
+  return store.get('openAtLogin') !== false
+}
+
+export function saveOpenAtLogin(on: boolean): void {
+  store.set('openAtLogin', on)
 }

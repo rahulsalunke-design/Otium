@@ -48,6 +48,35 @@ export const DEFAULT_ICON: IconId = 'bell'
 /** How the panel shows reminders: full cards, or a compact grid of rings. */
 export type PanelView = 'list' | 'glance'
 
+/** Colour themes. Each has a light and a dark version (it follows the Mac). */
+export const THEMES = [
+  { id: 'sage', label: 'Sage', swatch: { light: '#f7f7f5', dark: '#1c1c1e', accent: '#4f7f6f' } },
+  { id: 'dusk', label: 'Dusk', swatch: { light: '#faf5f0', dark: '#221c22', accent: '#c26a43' } },
+  { id: 'dawn', label: 'Dawn', swatch: { light: '#fdf6f5', dark: '#1f1b1e', accent: '#c96a7e' } },
+  { id: 'travertine', label: 'Travertine', swatch: { light: '#f1ece2', dark: '#22201b', accent: '#6c7745' } },
+  { id: 'tide', label: 'Tide', swatch: { light: '#f4f7f9', dark: '#171c20', accent: '#33769f' } },
+  { id: 'graphite', label: 'Graphite', swatch: { light: '#f5f5f5', dark: '#161616', accent: '#2b2b2b' } }
+] as const
+export type ThemeId = (typeof THEMES)[number]['id']
+/** A theme, or "follow-day": Dawn in the morning, Sage at midday, Dusk in the evening. */
+export type ThemeChoice = ThemeId | 'follow-day'
+export const THEME_CHOICES: readonly ThemeChoice[] = [...THEMES.map((t) => t.id), 'follow-day']
+
+export interface Appearance {
+  theme: ThemeChoice
+  /** Frosted, see-through panel using macOS's own blur. */
+  glass: boolean
+}
+export const DEFAULT_APPEARANCE: Appearance = { theme: 'sage', glass: false }
+
+/** Which theme "Follow the day" uses at a given time. */
+export function themeForTime(date: Date): ThemeId {
+  const h = date.getHours()
+  if (h >= 5 && h < 11) return 'dawn'
+  if (h >= 11 && h < 17) return 'sage'
+  return 'dusk'
+}
+
 /** One reminder: a built-in one (stand, water, eyes) or one the user added. */
 export interface Reminder {
   id: string
@@ -109,6 +138,8 @@ export const IPC = {
   timersUpdate: 'timers:update',
   getReminders: 'reminders:get',
   setReminders: 'reminders:set',
+  getAppearance: 'appearance:get',
+  setAppearance: 'appearance:set',
   previewSound: 'sound:preview',
   resizePanel: 'panel:resize',
   quit: 'app:quit'
@@ -121,6 +152,9 @@ export interface OtiumApi {
   onTimers(listener: (timers: TimerSnapshot[]) => void): () => void
   getReminders(): Promise<Reminder[]>
   setReminders(reminders: Reminder[]): Promise<Reminder[]>
+  getAppearance(): Promise<Appearance>
+  /** Saves the appearance and applies it. */
+  setAppearance(appearance: Appearance): Promise<Appearance>
   previewSound(sound: SoundId): void
   resizePanel(height: number): void
   quit(): void

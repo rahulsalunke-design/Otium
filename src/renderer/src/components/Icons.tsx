@@ -27,30 +27,9 @@ export const ResetIcon = () => (
   </svg>
 )
 
-export const SettingsIcon = () => (
-  <svg {...base} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
-    <path d="M2.5 4.5h11M2.5 11.5h11" />
-    <circle cx="10.5" cy="4.5" r="1.8" fill="var(--bg)" />
-    <circle cx="5.5" cy="11.5" r="1.8" fill="var(--bg)" />
-  </svg>
-)
-
 export const PlusIcon = () => (
   <svg {...base} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
     <path d="M8 3.5v9M3.5 8h9" />
-  </svg>
-)
-
-export const TrashIcon = () => (
-  <svg {...base} fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.1a1 1 0 0 0 1 .9h3.8a1 1 0 0 0 1-.9l.6-8.1" />
-  </svg>
-)
-
-export const SpeakerIcon = () => (
-  <svg {...base} fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M2.5 6.2v3.6h2.3L8 12.5v-9L4.8 6.2H2.5Z" fill="currentColor" />
-    <path d="M10.5 6a2.8 2.8 0 0 1 0 4M12.3 4.3a5.2 5.2 0 0 1 0 7.4" />
   </svg>
 )
 

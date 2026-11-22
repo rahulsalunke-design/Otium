@@ -1,0 +1,207 @@
+/* Colour themes. Sage is the default in styles.css; these override its tokens.
+   Chosen in Settings → Appearance; set on <html> as data-theme. Values match
+   design/theme-concepts/themes.mjs. */
+
+/* Dusk: Warm end-of-day light: terracotta on cream, deep plum-grey at night. */
+:root[data-theme="dusk"] {
+  --bg: #faf5f0;
+  --surface: #fffdfb;
+  --border: #efe4da;
+  --text: #2a1f1a;
+  --muted: #7a6a62;
+  --faint: #b3a59c;
+  --track: #f1e6dc;
+  --accent: #c26a43;
+  --accent-hover: #c26a43;
+  --accent-text: #ffffff;
+  --accent-soft: rgba(194, 106, 67, 0.12);
+  --focus: rgba(194, 106, 67, 0.45);
+  --glow: rgba(194, 106, 67, 0.28);
+  --hover: rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="dusk"] {
+    --bg: #221c22;
+    --surface: #2c2530;
+    --border: #3b3240;
+    --text: #f4ece6;
+    --muted: #a8989f;
+    --faint: #75666e;
+    --track: #3d3442;
+    --accent: #e9a07a;
+    --accent-hover: #e9a07a;
+    --accent-text: #2a1810;
+    --accent-soft: rgba(233, 160, 122, 0.16);
+    --focus: rgba(233, 160, 122, 0.45);
+    --glow: rgba(233, 160, 122, 0.32);
+    --hover: rgba(255, 255, 255, 0.07);
+  }
+}
+
+/* Dawn: Morning blush: rose on very light pink. */
+:root[data-theme="dawn"] {
+  --bg: #fdf6f5;
+  --surface: #ffffff;
+  --border: #f2e3e1;
+  --text: #2b2224;
+  --muted: #806e71;
+  --faint: #b8a6a9;
+  --track: #f6e7e5;
+  --accent: #c96a7e;
+  --accent-hover: #c96a7e;
+  --accent-text: #ffffff;
+  --accent-soft: rgba(201, 106, 126, 0.12);
+  --focus: rgba(201, 106, 126, 0.45);
+  --glow: rgba(201, 106, 126, 0.28);
+  --hover: rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="dawn"] {
+    --bg: #1f1b1e;
+    --surface: #2a2428;
+    --border: #3a3136;
+    --text: #f6eef0;
+    --muted: #ab9ba0;
+    --faint: #77686d;
+    --track: #3c3338;
+    --accent: #f0a3b1;
+    --accent-hover: #f0a3b1;
+    --accent-text: #2b1419;
+    --accent-soft: rgba(240, 163, 177, 0.16);
+    --focus: rgba(240, 163, 177, 0.45);
+    --glow: rgba(240, 163, 177, 0.32);
+    --hover: rgba(255, 255, 255, 0.07);
+  }
+}
+
+/* Travertine: Quiet luxury: olive on warm beige stone. */
+:root[data-theme="travertine"] {
+  --bg: #f1ece2;
+  --surface: #f9f6ef;
+  --border: #e2d9c8;
+  --text: #2b2a24;
+  --muted: #746d5f;
+  --faint: #aaa292;
+  --track: #e7dfcf;
+  --accent: #6c7745;
+  --accent-hover: #6c7745;
+  --accent-text: #ffffff;
+  --accent-soft: rgba(108, 119, 69, 0.12);
+  --focus: rgba(108, 119, 69, 0.45);
+  --glow: rgba(108, 119, 69, 0.28);
+  --hover: rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="travertine"] {
+    --bg: #22201b;
+    --surface: #2c2a24;
+    --border: #3b3830;
+    --text: #eee8dc;
+    --muted: #a79f8e;
+    --faint: #736c5e;
+    --track: #3d3a31;
+    --accent: #b3bd86;
+    --accent-hover: #b3bd86;
+    --accent-text: #1e2110;
+    --accent-soft: rgba(179, 189, 134, 0.16);
+    --focus: rgba(179, 189, 134, 0.45);
+    --glow: rgba(179, 189, 134, 0.32);
+    --hover: rgba(255, 255, 255, 0.07);
+  }
+}
+
+/* Tide: Blue-teal on cool greys, for deep-work days. */
+:root[data-theme="tide"] {
+  --bg: #f4f7f9;
+  --surface: #ffffff;
+  --border: #e1e8ee;
+  --text: #1b2126;
+  --muted: #66727c;
+  --faint: #a0aab3;
+  --track: #e6edf2;
+  --accent: #33769f;
+  --accent-hover: #33769f;
+  --accent-text: #ffffff;
+  --accent-soft: rgba(51, 118, 159, 0.12);
+  --focus: rgba(51, 118, 159, 0.45);
+  --glow: rgba(51, 118, 159, 0.28);
+  --hover: rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="tide"] {
+    --bg: #171c20;
+    --surface: #20272c;
+    --border: #2e373e;
+    --text: #eef3f6;
+    --muted: #94a2ad;
+    --faint: #64717b;
+    --track: #313b43;
+    --accent: #7bb6db;
+    --accent-hover: #7bb6db;
+    --accent-text: #0f2230;
+    --accent-soft: rgba(123, 182, 219, 0.16);
+    --focus: rgba(123, 182, 219, 0.45);
+    --glow: rgba(123, 182, 219, 0.32);
+    --hover: rgba(255, 255, 255, 0.07);
+  }
+}
+
+/* Graphite: Pure neutrals for people who don’t want colour. */
+:root[data-theme="graphite"] {
+  --bg: #f5f5f5;
+  --surface: #ffffff;
+  --border: #e5e5e5;
+  --text: #111111;
+  --muted: #6b6b6b;
+  --faint: #a3a3a3;
+  --track: #ebebeb;
+  --accent: #2b2b2b;
+  --accent-hover: #2b2b2b;
+  --accent-text: #ffffff;
+  --accent-soft: rgba(43, 43, 43, 0.12);
+  --focus: rgba(43, 43, 43, 0.45);
+  --glow: rgba(43, 43, 43, 0.28);
+  --hover: rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="graphite"] {
+    --bg: #161616;
+    --surface: #1f1f1f;
+    --border: #2e2e2e;
+    --text: #f5f5f5;
+    --muted: #9a9a9a;
+    --faint: #666666;
+    --track: #333333;
+    --accent: #e6e6e6;
+    --accent-hover: #e6e6e6;
+    --accent-text: #111111;
+    --accent-soft: rgba(230, 230, 230, 0.16);
+    --focus: rgba(230, 230, 230, 0.45);
+    --glow: rgba(230, 230, 230, 0.32);
+    --hover: rgba(255, 255, 255, 0.07);
+  }
+}
+
+/* Glass: the window behind the page is macOS's frosted blur, so the page
+   draws its backgrounds semi-transparently in the theme's own colours. */
+:root[data-glass],
+:root[data-glass] body {
+  background: transparent;
+}
+
+:root[data-glass] .panel {
+  background: color-mix(in srgb, var(--bg) 52%, transparent);
+}
+
+:root[data-glass] .list,
+:root[data-glass] .glance-tile,
+:root[data-glass] .settings,
+:root[data-glass] .empty {
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  border-color: color-mix(in srgb, var(--border) 55%, transparent);
+}

@@ -224,96 +224,6 @@ input:focus-visible {
   cursor: default;
 }
 
-/* Settings */
-.settings {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.group-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-
-.group-header:not(:first-child) {
-  margin-top: 6px;
-}
-
-.group-title {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--muted);
-}
-
-.column-label {
-  font-size: 11px;
-  color: var(--faint);
-  /* Lines up over the minutes fields (spacer column on the right). */
-  margin-right: 28px;
-}
-
-.group-empty {
-  color: var(--faint);
-  font-size: 12px;
-}
-
-.reminder-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.reminder-list {
-  gap: 10px;
-}
-
-.reminder-row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.reminder-main {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 28px;
-}
-
-/* Second line: the reminder's sound. Speaker sits under the icon button,
-   the dropdown under the name, so both lines share the same columns. */
-.sound-line {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-left: 38px;
-  color: var(--muted);
-}
-
-.sound-icon {
-  display: inline-grid;
-  place-items: center;
-  flex: none;
-  width: 28px;
-  color: var(--faint);
-}
-
-.sound-icon svg {
-  width: 13px;
-  height: 13px;
-}
-
 /* Our own arrow (instead of the system one) so it sits with even breathing room from the edge. */
 .sound-select {
   appearance: none;
@@ -351,27 +261,7 @@ input:focus-visible {
   cursor: default;
 }
 
-.reminder-row.is-off .sound-line {
-  opacity: 0.6;
-}
-
-.reminder-name {
-  flex: 1;
-  min-width: 0;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.reminder-row.is-off .reminder-name,
-.reminder-row.is-off .name-input,
-.reminder-row.is-off .minutes-input {
-  color: var(--faint);
-}
-
-.name-input,
-.minutes-input {
+.name-input {
   height: 28px;
   padding: 0 8px;
   font: inherit;
@@ -393,21 +283,8 @@ input:focus-visible {
   font-weight: 400;
 }
 
-.minutes-input {
-  width: 56px;
-  flex: none;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-.name-input.is-invalid,
-.minutes-input.is-invalid {
+.name-input.is-invalid {
   border-color: var(--danger);
-}
-
-.row-action-spacer {
-  width: 20px;
-  flex: none;
 }
 
 .icon-button.small {
@@ -487,13 +364,6 @@ input:focus-visible {
   color: var(--danger);
 }
 
-.settings-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 4px;
-}
-
 /* List / Glance switch in the header */
 .header-actions {
   align-items: center;
@@ -530,30 +400,6 @@ input:focus-visible {
 /* Keyboard focus ring drawn inside the button so it stays within the pill. */
 .view-toggle button:focus-visible {
   box-shadow: inset 0 0 0 2px var(--focus);
-}
-
-/* Icon picker in Settings */
-.icon-pick {
-  flex: none;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  display: grid;
-  place-items: center;
-  color: var(--accent);
-  background: var(--accent-soft);
-  border: 1px solid transparent;
-  transition: border-color 120ms ease;
-}
-
-.icon-pick:hover,
-.icon-pick.is-open {
-  border-color: var(--accent);
-}
-
-.reminder-row.is-off .icon-pick {
-  color: var(--faint);
-  background: var(--hover);
 }
 
 .icon-grid {
@@ -934,4 +780,322 @@ input:focus-visible {
 
 .lrow.is-idle .lring-icon {
   color: var(--faint);
+}
+
+/* Settings → Appearance */
+.appearance {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px 4px;
+}
+
+.theme-opt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 0;
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.theme-opt:hover {
+  color: var(--text);
+}
+
+.theme-dot {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  transition: box-shadow 0.15s ease;
+}
+
+.theme-accent {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+}
+
+.theme-opt.is-selected {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.theme-opt.is-selected .theme-dot {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent);
+}
+
+.setting-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 28px;
+}
+
+/* Header text buttons (Cancel / Done in Edit reminders) */
+.header-text-btn {
+  margin: 0;
+  padding: 4px 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.header-text-btn.is-strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.header-text-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Appearance screen */
+.appearance-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Edit reminders: one compact line per reminder; click to open its details. */
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.elist {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.erow + .erow,
+.elist .add-button {
+  border-top: 1px solid var(--border);
+}
+
+.elist .add-button {
+  width: 100%;
+  height: 38px;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-radius: 0;
+}
+
+.erow-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 8px 0 12px;
+}
+
+.erow-toggle {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  text-align: left;
+  border-radius: 8px;
+}
+
+.erow-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.erow-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.erow-name.is-placeholder {
+  color: var(--faint);
+  font-weight: 500;
+  font-style: italic;
+}
+
+.erow-min {
+  flex: none;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  padding: 3px 8px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.erow-min.is-bad {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.erow-chev {
+  display: grid;
+  place-items: center;
+  color: var(--faint);
+  transition: transform 0.2s ease;
+}
+
+.erow.is-open .erow-chev {
+  transform: rotate(90deg);
+}
+
+.erow.is-open {
+  background: var(--hover);
+}
+
+.erow.is-off .erow-name {
+  color: var(--muted);
+}
+
+.erow.is-off .erow-icon {
+  background: var(--hover);
+  color: var(--faint);
+}
+
+.erow-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 12px 12px 52px;
+}
+
+.ed-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 28px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ed-line .name-input {
+  flex: 0 1 150px;
+}
+
+.ed-sound {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ed-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: -4px;
+}
+
+.erow-details .icon-grid {
+  margin: 0;
+  background: var(--surface);
+}
+
+.erow-details .icon-choice {
+  width: 26px;
+  height: 26px;
+}
+
+.ed-note {
+  margin: 0;
+  font-size: 11px;
+  color: var(--faint);
+}
+
+.ed-delete {
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--danger);
+  padding: 2px 0;
+}
+
+.ed-delete:hover {
+  text-decoration: underline;
+}
+
+/* − 45 min + */
+.stepper {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.stepper.is-invalid {
+  border-color: var(--danger);
+}
+
+.stepper button {
+  width: 26px;
+  height: 100%;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.stepper button:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.stepper input {
+  width: 34px;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  user-select: text;
+  -moz-appearance: textfield;
+}
+
+.stepper input::-webkit-inner-spin-button,
+.stepper input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stepper-unit {
+  padding: 0 4px 0 3px;
+  font-size: 12px;
+  color: var(--muted);
 }
