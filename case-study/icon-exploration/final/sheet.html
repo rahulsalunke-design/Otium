@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Otium app icon</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; padding:48px; width:1280px; background:#F7F7F5; color:#1D1D1F;
+         font: 14px/1.5 -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; }
+  h1 { margin:0 0 4px; font-size:28px; letter-spacing:-0.01em; }
+  .lede { margin:0 0 32px; color:#6E6E73; max-width:760px; }
+  .row { display:grid; grid-template-columns: 1.15fr 1fr; gap:20px; margin-bottom:20px; }
+  .panel { background:#fff; border:1px solid #E7E7E3; border-radius:18px; padding:26px; }
+  h2 { margin:0 0 16px; font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:#6E6E73; }
+  .evolution { display:flex; align-items:center; gap:28px; }
+  .evolution figure { margin:0; text-align:center; }
+  .evolution img { width:200px; height:200px; filter: drop-shadow(0 10px 18px rgba(0,0,0,.16)); }
+  .evolution .before img { width:150px; height:150px; opacity:.85; }
+  figcaption { font-size:12px; color:#6E6E73; margin-top:6px; }
+  .arrow { font-size:28px; color:#9AA8A2; }
+  .meaning p { margin:0 0 10px; color:#3A3A3C; }
+  .meaning b { color:#1D1D1F; }
+  .sizes { display:flex; align-items:flex-end; gap:22px; }
+  .sizes figure { margin:0; text-align:center; }
+  .bars { display:flex; flex-direction:column; gap:10px; }
+  .bar { display:flex; align-items:center; gap:14px; height:30px; padding:0 14px; border-radius:7px; font-size:13px; font-weight:500; }
+  .bar.light { background:#ECECEC; } .bar.dark { background:#2A2A2C; color:#F2F2F2; }
+  .bar img { width:18px; height:18px; } .inv { filter: invert(1); }
+  .bar .dots { flex:1; height:6px; border-radius:3px; background:currentColor; opacity:.18; }
+  .zoom { display:flex; gap:16px; margin-top:16px; }
+  .zoom div { width:120px; height:120px; border-radius:14px; display:grid; place-items:center; }
+  .zoom .l { background:#ECECEC; } .zoom .d { background:#2A2A2C; }
+  .zoom img { width:84px; height:84px; }
+</style></head><body>
+  <h1>Otium · app icon</h1>
+  <p class="lede">Final direction: <b>Orbit × Dusk</b>. Chosen from six concepts (round 1) and ten variations of Orbit and Dusk (round 2).</p>
+  <div class="row">
+    <div class="panel">
+      <h2>Before → after</h2>
+      <div class="evolution">
+        <figure class="before"><img src="before-pause-icon.png" alt=""><figcaption>v1 · "Pause" symbol</figcaption></figure>
+        <span class="arrow">→</span>
+        <figure><img src="otium-app.svg" alt=""><figcaption>Otium · Orbit × Dusk</figcaption></figure>
+      </div>
+    </div>
+    <div class="panel meaning">
+      <h2>What it means</h2>
+      <p><b>The ring is the day.</b> It's the same progress ring as the Glance view, three quarters done.</p>
+      <p><b>The sun on the horizon is dusk:</b> the moment to step away, and the leisure that <i>otium</i> means in Latin.</p>
+      <p><b>Sage and white</b> carry the app's calm palette, with a soft top-light sheen.</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="panel">
+      <h2>Real sizes</h2>
+      <div class="sizes">
+        <figure><img src="otium-app.svg" width="256" height="256" alt=""><figcaption>256</figcaption></figure>
+        <figure><img src="otium-app.svg" width="128" height="128" alt=""><figcaption>128</figcaption></figure>
+        <figure><img src="otium-app.svg" width="64" height="64" alt=""><figcaption>64</figcaption></figure>
+        <figure><img src="otium-app.svg" width="32" height="32" alt=""><figcaption>32</figcaption></figure>
+        <figure><img src="otium-app.svg" width="16" height="16" alt=""><figcaption>16</figcaption></figure>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Menu bar (simplified for 18px)</h2>
+      <div class="bars">
+        <div class="bar light"><span>Fri 9:41</span><img src="otium-menubar.svg" alt=""><span class="dots"></span></div>
+        <div class="bar dark"><span>Fri 9:41</span><img class="inv" src="otium-menubar.svg" alt=""><span class="dots"></span></div>
+      </div>
+      <div class="zoom"><div class="l"><img src="otium-menubar.svg" alt=""></div><div class="d"><img class="inv" src="otium-menubar.svg" alt=""></div></div>
+    </div>
+  </div>
+</body></html>

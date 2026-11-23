@@ -23,5 +23,3 @@ npm-debug.log*
 # Claude Code personal settings
 .claude/settings.local.json
 
-# Case-study material (kept on this Mac only)
-case-study/
