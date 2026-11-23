@@ -538,250 +538,6 @@ input:focus-visible {
   line-height: 16px;
 }
 
-/* List view: compact rows with a ring gauge. A row expands on hover or
-   keyboard focus to show how often it repeats, plus Snooze. */
-:root {
-  --row-h: 46px;
-  --row-grow: 14px;
-  --glow: rgba(79, 127, 111, 0.28);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --glow: rgba(127, 176, 159, 0.32);
-  }
-}
-
-/* Room for one expanded row, just below the list. It shrinks as a row grows,
-   so the panel's height never changes on hover (the window doesn't jump). */
-.list-wrap {
-  padding-bottom: var(--row-grow);
-  transition: padding-bottom 0.18s ease;
-}
-
-.list-wrap:has(.lrow:hover),
-.list-wrap:has(.lrow:focus-within) {
-  padding-bottom: 0;
-}
-
-.list {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.lrow {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: var(--row-h);
-  padding: 0 10px 0 10px;
-  transition: height 0.18s ease, background-color 0.15s ease;
-}
-
-.lrow + .lrow {
-  border-top: 1px solid var(--border);
-}
-
-.lrow:hover,
-.lrow:focus-within {
-  height: calc(var(--row-h) + var(--row-grow));
-  background: var(--hover);
-}
-
-@keyframes lrow-glow {
-  from {
-    box-shadow: inset 0 0 0 999px var(--glow);
-  }
-  to {
-    box-shadow: inset 0 0 0 999px transparent;
-  }
-}
-
-.lrow.just-fired {
-  animation: lrow-glow 2.2s ease-out;
-}
-
-/* Ring gauge with the reminder's icon; becomes Reset on hover. */
-.lring {
-  position: relative;
-  flex: none;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  transition: background-color 0.15s ease;
-}
-
-.lring-gauge {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.lring-track {
-  fill: none;
-  stroke: var(--track);
-}
-
-.lring-fill {
-  fill: none;
-  stroke: var(--accent);
-  stroke-linecap: round;
-  transition: stroke-dashoffset 1s linear, stroke 0.2s ease;
-}
-
-.lring-icon,
-.lring-reset {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: var(--accent);
-  transition: opacity 0.15s ease, transform 0.2s ease;
-}
-
-.lring-reset {
-  opacity: 0;
-  transform: rotate(-60deg);
-}
-
-.lring-reset svg {
-  width: 14px;
-  height: 14px;
-}
-
-.lring:hover,
-.lring:focus-visible {
-  background: var(--accent-soft);
-}
-
-.lring:hover .lring-icon,
-.lring:focus-visible .lring-icon {
-  opacity: 0;
-}
-
-.lring:hover .lring-reset,
-.lring:focus-visible .lring-reset {
-  opacity: 1;
-  transform: rotate(0);
-}
-
-.lrow-text {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.lrow-name {
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.lrow-detail {
-  font-size: 11px;
-  color: var(--faint);
-  white-space: nowrap;
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition: max-height 0.18s ease, opacity 0.18s ease;
-}
-
-.lrow:hover .lrow-detail,
-.lrow:focus-within .lrow-detail {
-  max-height: 16px;
-  opacity: 1;
-}
-
-@keyframes snooze-pop {
-  0% {
-    transform: scale(0.6);
-    opacity: 0;
-  }
-  70% {
-    transform: scale(1.08);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-/* Snooze shows on hover, and stays visible after a reminder goes off. */
-.lrow-snooze {
-  display: none;
-  flex: none;
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--accent);
-  background: var(--accent-soft);
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.lrow.is-offered .lrow-snooze,
-.lrow:hover .lrow-snooze,
-.lrow:focus-within .lrow-snooze {
-  display: inline-block;
-  animation: snooze-pop 0.3s ease-out;
-}
-
-.lrow-snooze:hover {
-  background: var(--accent);
-  color: var(--accent-text);
-}
-
-.lrow-time {
-  flex: none;
-  font-size: 17px;
-  font-weight: 300;
-  letter-spacing: -0.01em;
-  font-variant-numeric: tabular-nums;
-}
-
-.lrow-toggle {
-  flex: none;
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
-  display: grid;
-  place-items: center;
-  color: var(--accent);
-  background: var(--accent-soft);
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.lrow-toggle:hover {
-  background: var(--accent);
-  color: var(--accent-text);
-}
-
-.lrow-toggle svg {
-  width: 13px;
-  height: 13px;
-}
-
-/* Paused or stopped: dimmed. */
-.lrow.is-idle .lrow-name,
-.lrow.is-idle .lrow-time {
-  color: var(--muted);
-}
-
-.lrow.is-idle .lring-fill {
-  stroke: var(--faint);
-}
-
-.lrow.is-idle .lring-icon {
-  color: var(--faint);
-}
-
 /* Settings → Appearance */
 .appearance {
   display: flex;
@@ -1098,4 +854,228 @@ input:focus-visible {
   padding: 0 4px 0 3px;
   font-size: 12px;
   color: var(--muted);
+}
+
+/* List view: compact rows. Top line: ring gauge, name, countdown, Reset and
+   pause/play. A second line (how often it repeats, plus Snooze) opens on hover
+   or keyboard focus, and stays open after a reminder goes off. */
+:root {
+  --row-h: 46px;
+  --row-grow: 14px;
+  --glow: rgba(79, 127, 111, 0.28);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --glow: rgba(127, 176, 159, 0.32);
+  }
+}
+
+/* Room for one expanding row, just below the list. It shrinks as a row grows,
+   so the panel's height never changes on hover (the window doesn't jump).
+   Rows that are already open (a reminder just went off) don't grow. */
+.list-wrap {
+  padding-bottom: var(--row-grow);
+  transition: padding-bottom 0.18s ease;
+}
+
+.list-wrap:has(.lrow:not(.is-offered):hover),
+.list-wrap:has(.lrow:not(.is-offered):focus-within) {
+  padding-bottom: 0;
+}
+
+.list {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.lrow {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto auto;
+  grid-template-areas:
+    'ring name   time   actions'
+    'ring detail detail detail';
+  align-content: center;
+  align-items: center;
+  column-gap: 10px;
+  height: var(--row-h);
+  padding: 0 10px;
+  transition: height 0.18s ease, background-color 0.15s ease;
+}
+
+.lrow + .lrow {
+  border-top: 1px solid var(--border);
+}
+
+.lrow:hover,
+.lrow:focus-within,
+.lrow.is-offered {
+  height: calc(var(--row-h) + var(--row-grow));
+}
+
+.lrow:hover,
+.lrow:focus-within {
+  background: var(--hover);
+}
+
+@keyframes lrow-glow {
+  from {
+    box-shadow: inset 0 0 0 999px var(--glow);
+  }
+  to {
+    box-shadow: inset 0 0 0 999px transparent;
+  }
+}
+
+.lrow.just-fired {
+  animation: lrow-glow 2.2s ease-out;
+}
+
+/* Ring gauge with the reminder's icon. */
+.lring {
+  grid-area: ring;
+  align-self: center;
+  position: relative;
+  width: 30px;
+  height: 30px;
+}
+
+.lring-gauge {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.lring-track {
+  fill: none;
+  stroke: var(--track);
+}
+
+.lring-fill {
+  fill: none;
+  stroke: var(--accent);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear, stroke 0.2s ease;
+}
+
+.lring-icon {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+}
+
+.lrow-name {
+  grid-area: name;
+  min-width: 0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lrow-time {
+  grid-area: time;
+  font-size: 17px;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Reset and pause/play, side by side on every row. */
+.lrow-actions {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.lrow-reset,
+.lrow-toggle {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.lrow-reset {
+  color: var(--muted);
+}
+
+.lrow-reset:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.lrow-reset svg {
+  width: 15px;
+  height: 15px;
+}
+
+.lrow-toggle {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.lrow-toggle:hover {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.lrow-toggle svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* Second line: "every 20 min · Snooze 5 min". */
+.lrow-detail {
+  grid-area: detail;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--faint);
+  white-space: nowrap;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.18s ease, opacity 0.18s ease;
+}
+
+.lrow:hover .lrow-detail,
+.lrow:focus-within .lrow-detail,
+.lrow.is-offered .lrow-detail {
+  max-height: 16px;
+  opacity: 1;
+}
+
+.lrow-snooze {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  border-radius: 4px;
+}
+
+.lrow-snooze:hover {
+  text-decoration: underline;
+}
+
+/* Paused or stopped: dimmed. */
+.lrow.is-idle .lrow-name,
+.lrow.is-idle .lrow-time {
+  color: var(--muted);
+}
+
+.lrow.is-idle .lring-fill {
+  stroke: var(--faint);
+}
+
+.lrow.is-idle .lring-icon {
+  color: var(--faint);
 }

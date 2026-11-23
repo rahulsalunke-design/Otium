@@ -18,7 +18,7 @@ Each reminder also has its own **sound**, picked from four calm sounds made for 
 
 The panel has two views, switched with the buttons at the top:
 
-- **List**: one compact row per reminder: a small ring gauge with its icon, the name, the exact countdown and pause/play. Hover a row to see how often it repeats and to Snooze it; hover the ring to Reset. A row glows briefly when its reminder goes off.
+- **List**: one compact row per reminder: a small ring gauge with its icon, the name, the exact countdown and pause/play. Every row has **↺ Reset** beside pause/play. Hover a row to see how often it repeats and a **Snooze 5 min** link; after a reminder goes off, its row stays open so Snooze is right there. A row glows briefly when its reminder goes off.
 - **Glance**: a compact grid of rings, one per reminder. Each ring empties like a clock as the time runs down, with its icon in the middle and the time left in minutes. Hover over a ring to pause or start it.
 
 Otium remembers which view you used last.

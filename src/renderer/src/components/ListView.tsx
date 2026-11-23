@@ -19,8 +19,8 @@ interface Props {
 /**
  * List view: one compact row per reminder. A ring gauge with the reminder's
  * icon, its name, the countdown and pause/play. Hovering (or tabbing into) a
- * row expands it to show how often it repeats, with a Snooze button; hovering
- * the ring turns it into Reset.
+ * row opens a second line with how often it repeats and Snooze (it stays open
+ * after a reminder goes off). Reset sits beside pause/play on every row.
  */
 export function ListView({ timers, onAction }: Props) {
   return (
@@ -50,13 +50,7 @@ function ListRow({ timer: t, onAction }: { timer: TimerSnapshot; onAction: (a: T
       className={`lrow ${running ? '' : 'is-idle'} ${offered ? 'is-offered' : ''} ${justFired ? 'just-fired' : ''}`}
       aria-label={t.label}
     >
-      <button
-        type="button"
-        className="lring"
-        onClick={() => onAction('reset')}
-        aria-label={`Reset ${t.label}`}
-        title="Reset"
-      >
+      <span className="lring" aria-hidden="true">
         <svg className="lring-gauge" viewBox={`0 0 ${SIZE} ${SIZE}`} aria-hidden="true">
           <circle className="lring-track" cx={SIZE / 2} cy={SIZE / 2} r={RADIUS} strokeWidth={STROKE} />
           <circle
@@ -73,41 +67,50 @@ function ListRow({ timer: t, onAction }: { timer: TimerSnapshot; onAction: (a: T
         <span className="lring-icon">
           <ReminderIcon icon={t.icon} size={14} />
         </span>
-        <span className="lring-reset">
-          <ResetIcon />
-        </span>
-      </button>
+      </span>
 
-      <div className="lrow-text">
-        <span className="lrow-name" title={t.label}>
-          {t.label}
-        </span>
-        <span className="lrow-detail">{detailLine(t)}</span>
-      </div>
-
-      <button
-        type="button"
-        className="lrow-snooze"
-        onClick={() => onAction('snooze')}
-        title="Remind me again in 5 minutes"
-        aria-label={`Snooze ${t.label} for 5 minutes`}
-      >
-        Snooze
-      </button>
+      <span className="lrow-name" title={t.label}>
+        {t.label}
+      </span>
 
       <span className="lrow-time" role="timer" aria-live="off">
         {formatCountdown(t.remainingMs)}
       </span>
 
-      <button
-        type="button"
-        className="lrow-toggle"
-        onClick={() => onAction(running ? 'pause' : 'start')}
-        aria-label={`${running ? 'Pause' : 'Start'} ${t.label}`}
-        title={running ? 'Pause' : 'Start'}
-      >
-        {running ? <PauseIcon /> : <PlayIcon />}
-      </button>
+      <div className="lrow-actions">
+        <button
+          type="button"
+          className="lrow-reset"
+          onClick={() => onAction('reset')}
+          aria-label={`Reset ${t.label}`}
+          title="Reset"
+        >
+          <ResetIcon />
+        </button>
+        <button
+          type="button"
+          className="lrow-toggle"
+          onClick={() => onAction(running ? 'pause' : 'start')}
+          aria-label={`${running ? 'Pause' : 'Start'} ${t.label}`}
+          title={running ? 'Pause' : 'Start'}
+        >
+          {running ? <PauseIcon /> : <PlayIcon />}
+        </button>
+      </div>
+
+      <div className="lrow-detail">
+        <span>{detailLine(t)}</span>
+        <span aria-hidden="true">·</span>
+        <button
+          type="button"
+          className="lrow-snooze"
+          onClick={() => onAction('snooze')}
+          title="Remind me again in 5 minutes"
+          aria-label={`Snooze ${t.label} for 5 minutes`}
+        >
+          Snooze 5 min
+        </button>
+      </div>
     </section>
   )
 }
