@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type MutableRefObject } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   DEFAULT_ICON,
   DEFAULT_SOUND,
@@ -14,23 +14,15 @@ import {
 import { PlayIcon, PlusIcon } from './Icons'
 import { ReminderIcon } from './ReminderIcon'
 
-/** What the header's Done button calls. */
-export interface EditorApi {
-  save: () => Promise<boolean>
-}
-
-interface Props {
-  apiRef: MutableRefObject<EditorApi | null>
-  /** Tells the header whether Done can be pressed (no errors). */
-  onValidityChange: (ok: boolean) => void
-}
-
-/** A reminder while it's being edited: minutes stay as typed until Done. */
+/** A reminder while it's being edited: minutes stay as typed. */
 interface Draft extends Omit<Reminder, 'minutes'> {
   minutes: string
 }
 
 const STEP = 5
+/** Typing (a name or an interval) saves once you pause for this long. */
+const TYPING_SAVE_MS = 600
+const UNDO_MS = 4000
 const toDraft = (r: Reminder): Draft => ({ ...r, minutes: String(r.minutes) })
 
 function badMinutes(d: Draft): boolean {
@@ -44,16 +36,27 @@ function badName(d: Draft): boolean {
 
 /**
  * Edit reminders: the main list in edit mode. One compact line per reminder;
- * clicking a line opens its details in place. Cancel discards, Done saves.
+ * clicking a line opens its details in place. Every change applies straight
+ * away (like macOS System Settings); switching off and deleting offer Undo.
  */
-export function ReminderEditor({ apiRef, onValidityChange }: Props) {
+export function ReminderEditor() {
   const [drafts, setDrafts] = useState<Draft[] | null>(null)
   const [openId, setOpenId] = useState<string | null>(null)
   const [focusId, setFocusId] = useState<string | null>(null)
+  const [undo, setUndo] = useState<{ message: string; before: Draft[] } | null>(null)
   const nameRefs = useRef(new Map<string, HTMLInputElement>())
+  /** The last version the engine accepted, by id (fallback for half-typed rows). */
+  const saved = useRef(new Map<string, Reminder>())
+  const latest = useRef<Draft[] | null>(null)
+  const typingTimer = useRef<number | undefined>(undefined)
+  const undoTimer = useRef<number | undefined>(undefined)
 
   useEffect(() => {
-    window.otium.getReminders().then((list) => setDrafts(list.map(toDraft)))
+    window.otium.getReminders().then((list) => {
+      saved.current = new Map(list.map((r) => [r.id, r]))
+      latest.current = list.map(toDraft)
+      setDrafts(latest.current)
+    })
   }, [])
 
   // Put the cursor in the name field of a reminder that was just added.
@@ -63,26 +66,72 @@ export function ReminderEditor({ apiRef, onValidityChange }: Props) {
     setFocusId(null)
   }, [focusId])
 
-  const missingName = drafts?.some(badName) ?? false
-  const wrongMinutes = drafts?.some(badMinutes) ?? false
-  const ok = drafts !== null && !missingName && !wrongMinutes
+  // Leaving the screen mid-typing still saves what's valid.
+  useEffect(
+    () => () => {
+      if (typingTimer.current !== undefined && latest.current) save(latest.current)
+      window.clearTimeout(undoTimer.current)
+    },
+    []
+  )
 
-  useEffect(() => onValidityChange(ok), [ok, onValidityChange])
-
-  apiRef.current = {
-    save: async () => {
-      if (!drafts || !ok) return false
-      await window.otium.setReminders(
-        drafts.map((d) => ({ ...d, label: d.label.trim(), minutes: Number(d.minutes) }))
-      )
-      return true
+  /**
+   * Saves the list. A row that isn't valid yet (a new reminder with no name,
+   * an interval mid-typing) keeps its last saved values, or is left out if it
+   * was never saved, so everything else still applies.
+   */
+  async function save(list: Draft[]) {
+    window.clearTimeout(typingTimer.current)
+    typingTimer.current = undefined
+    const payload: Reminder[] = []
+    for (const d of list) {
+      if (!badName(d) && !badMinutes(d)) {
+        payload.push({ ...d, label: d.label.trim(), minutes: Number(d.minutes) })
+      } else {
+        const prev = saved.current.get(d.id)
+        if (prev) payload.push({ ...prev, enabled: d.enabled })
+      }
     }
+    const result = await window.otium.setReminders(payload)
+    saved.current = new Map(result.map((r) => [r.id, r]))
   }
 
   if (!drafts) return null
 
-  const update = (id: string, patch: Partial<Draft>) =>
-    setDrafts(drafts.map((d) => (d.id === id ? { ...d, ...patch } : d)))
+  /** Applies a change: saves now, or after a short pause while typing. */
+  const apply = (next: Draft[], when: 'now' | 'typing' = 'now') => {
+    latest.current = next
+    setDrafts(next)
+    if (when === 'now') save(next)
+    else {
+      window.clearTimeout(typingTimer.current)
+      typingTimer.current = window.setTimeout(() => save(next), TYPING_SAVE_MS)
+    }
+  }
+
+  const update = (id: string, patch: Partial<Draft>, when: 'now' | 'typing' = 'now') =>
+    apply(
+      drafts.map((d) => (d.id === id ? { ...d, ...patch } : d)),
+      when
+    )
+
+  const offerUndo = (message: string, before: Draft[]) => {
+    setUndo({ message, before })
+    window.clearTimeout(undoTimer.current)
+    undoTimer.current = window.setTimeout(() => setUndo(null), UNDO_MS)
+  }
+
+  const undoLast = () => {
+    if (!undo) return
+    apply(undo.before)
+    setUndo(null)
+  }
+
+  const toggle = (d: Draft, on: boolean) => {
+    const before = drafts
+    update(d.id, { enabled: on })
+    offerUndo(`${d.label.trim() || 'New reminder'} turned ${on ? 'on' : 'off'}`, before)
+  }
 
   const step = (d: Draft, delta: number) => {
     const n = Number(d.minutes)
@@ -94,7 +143,7 @@ export function ReminderEditor({ apiRef, onValidityChange }: Props) {
 
   const add = () => {
     const id = crypto.randomUUID()
-    setDrafts([
+    apply([
       ...drafts,
       { id, label: '', minutes: '30', enabled: true, builtIn: false, sound: DEFAULT_SOUND, icon: DEFAULT_ICON }
     ])
@@ -102,15 +151,20 @@ export function ReminderEditor({ apiRef, onValidityChange }: Props) {
     setFocusId(id)
   }
 
-  const remove = (id: string) => {
-    setDrafts(drafts.filter((d) => d.id !== id))
+  const remove = (d: Draft) => {
+    const before = drafts
+    apply(drafts.filter((x) => x.id !== d.id))
     setOpenId(null)
+    if (d.label.trim()) offerUndo(`${d.label.trim()} deleted`, before)
   }
 
   const chooseSound = (id: string, sound: SoundId) => {
     update(id, { sound })
     window.otium.previewSound(sound) // hear it as you pick it
   }
+
+  const missingName = drafts.some(badName)
+  const wrongMinutes = drafts.some(badMinutes)
 
   const atLimit = drafts.length >= MAX_REMINDERS
 
@@ -126,7 +180,7 @@ export function ReminderEditor({ apiRef, onValidityChange }: Props) {
             role="switch"
             className="switch"
             checked={d.enabled}
-            onChange={(e) => update(d.id, { enabled: e.target.checked })}
+            onChange={(e) => toggle(d, e.target.checked)}
             aria-label={`${name} on or off`}
           />
           <button
@@ -164,7 +218,7 @@ export function ReminderEditor({ apiRef, onValidityChange }: Props) {
                   value={d.label}
                   maxLength={MAX_LABEL_LENGTH}
                   placeholder="e.g. Stretch"
-                  onChange={(e) => update(d.id, { label: e.target.value })}
+                  onChange={(e) => update(d.id, { label: e.target.value }, 'typing')}
                   aria-invalid={badName(d)}
                 />
               </label>
@@ -182,7 +236,7 @@ export function ReminderEditor({ apiRef, onValidityChange }: Props) {
                   min={MIN_MINUTES}
                   max={MAX_MINUTES}
                   value={d.minutes}
-                  onChange={(e) => update(d.id, { minutes: e.target.value })}
+                  onChange={(e) => update(d.id, { minutes: e.target.value }, 'typing')}
                   aria-label={`${name} interval in minutes`}
                   aria-invalid={badMinutes(d)}
                 />
@@ -242,7 +296,7 @@ export function ReminderEditor({ apiRef, onValidityChange }: Props) {
             {d.builtIn ? (
               <p className="ed-note">Built-in reminders can be switched off but not deleted.</p>
             ) : (
-              <button type="button" className="ed-delete" onClick={() => remove(d.id)}>
+              <button type="button" className="ed-delete" onClick={() => remove(d)}>
                 Delete reminder
               </button>
             )}
@@ -261,13 +315,22 @@ export function ReminderEditor({ apiRef, onValidityChange }: Props) {
           {atLimit ? `Up to ${MAX_REMINDERS} reminders` : 'Add reminder'}
         </button>
       </div>
-      <p className={`hint ${ok ? '' : 'is-error'}`}>
+      <p className={`hint ${missingName || wrongMinutes ? 'is-error' : ''}`}>
         {missingName
-          ? 'Give each new reminder a name.'
+          ? 'Give the new reminder a name to save it.'
           : wrongMinutes
-            ? `Use whole minutes between ${MIN_MINUTES} and ${MAX_MINUTES}.`
-            : 'Click a reminder to change it. Changing an interval restarts it.'}
+            ? `Use whole minutes between ${MIN_MINUTES} and ${MAX_MINUTES}; until then the last valid interval is kept.`
+            : 'Changes apply straight away. Changing an interval restarts that reminder.'}
       </p>
+
+      {undo && (
+        <div className="undo-toast" role="status">
+          <span>{undo.message}</span>
+          <button type="button" onClick={undoLast}>
+            Undo
+          </button>
+        </div>
+      )}
     </div>
   )
 }

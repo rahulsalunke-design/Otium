@@ -10,7 +10,7 @@ It comes with three built-in reminders:
 - **Water**: every 60 minutes
 - **Eye break (20-20-20)**: every 20 minutes. Look at something 20 feet away for 20 seconds.
 
-Click **✎ Edit reminders** in the panel's header to switch any of them off, change how often each one comes up, and **add your own** (for example "Stretch" every 30 minutes or "Take a walk" every 90), up to 10 reminders in total. Your own reminders can be renamed or deleted; the built-in ones can only be switched off. Each reminder is one compact line; click it to open its details (name, interval with − / +, sound, icon, delete) right there. **Done** saves, **Cancel** discards. Everything is saved between launches.
+Click **✎ Edit reminders** in the panel's header to switch any of them off, change how often each one comes up, and **add your own** (for example "Stretch" every 30 minutes or "Take a walk" every 90), up to 10 reminders in total. Your own reminders can be renamed or deleted; the built-in ones can only be switched off. Each reminder is one compact line; click it to open its details (name, interval with − / +, sound, icon, delete) right there. Every change applies straight away, like macOS System Settings; switching a reminder off or deleting one shows a short **Undo**. Everything is saved between launches.
 
 Each reminder has an **icon** too: the built-in ones start with a standing person, a glass of water and an eye, and you can pick any of 21 icons (walk, breathe, coffee, medicine and more) for any reminder in Edit reminders.
 

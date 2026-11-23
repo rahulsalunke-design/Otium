@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { LayoutGrid, List, Palette, Pencil } from 'lucide-react'
 import { DEFAULT_APPEARANCE, themeForTime, type Appearance, type PanelView } from '@shared/types'
 import { useTimers } from './hooks/useTimers'
 import { ListView } from './components/ListView'
 import { GlanceView } from './components/GlanceView'
-import { ReminderEditor, type EditorApi } from './components/ReminderEditor'
+import { ReminderEditor } from './components/ReminderEditor'
 import { AppearanceSection } from './components/AppearanceSection'
 import { BackIcon, PowerIcon } from './components/Icons'
 
@@ -46,8 +46,6 @@ export function App() {
   const [panelView, setPanelView] = useState<PanelView>(loadPanelView)
   const [appearance, setAppearance] = useState<Appearance>(DEFAULT_APPEARANCE)
   const [minute, setMinute] = useState(() => Math.floor(Date.now() / 60_000))
-  const editorApi = useRef<EditorApi | null>(null)
-  const [editorOk, setEditorOk] = useState(true)
   const headerRef = useRef<HTMLElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
 
@@ -70,12 +68,6 @@ export function App() {
     setAppearance(a)
     window.otium.setAppearance(a)
   }
-
-  const finishEditing = async () => {
-    if (await editorApi.current?.save()) setView('timers')
-  }
-
-  const onValidityChange = useCallback((ok: boolean) => setEditorOk(ok), [])
 
   // Fit the window to whatever is showing. Measures the full content height
   // (not the visible part), so the window can grow back after it was capped
@@ -142,40 +134,29 @@ export function App() {
     </button>
   )
 
+  // Edit reminders and Appearance share a simple header: Back, title, Quit.
+  // Both save as you go, so there's nothing to confirm on the way out.
+  const backHeader = (title: string) => (
+    <>
+      <button
+        type="button"
+        className="icon-button"
+        onClick={() => setView('timers')}
+        aria-label="Back to timers"
+        title="Back"
+      >
+        <BackIcon />
+      </button>
+      <h1 className="header-title">{title}</h1>
+      {quitButton}
+    </>
+  )
+
   let header
   if (view === 'edit') {
-    header = (
-      <>
-        <button type="button" className="text-button header-text-btn" onClick={() => setView('timers')}>
-          Cancel
-        </button>
-        <h1 className="header-title">Edit reminders</h1>
-        <button
-          type="button"
-          className="text-button header-text-btn is-strong"
-          onClick={finishEditing}
-          disabled={!editorOk}
-        >
-          Done
-        </button>
-      </>
-    )
+    header = backHeader('Edit reminders')
   } else if (view === 'appearance') {
-    header = (
-      <>
-        <button
-          type="button"
-          className="icon-button"
-          onClick={() => setView('timers')}
-          aria-label="Back to timers"
-          title="Back"
-        >
-          <BackIcon />
-        </button>
-        <h1 className="header-title">Appearance</h1>
-        {quitButton}
-      </>
-    )
+    header = backHeader('Appearance')
   } else {
     header = (
       <>
@@ -215,7 +196,7 @@ export function App() {
       <main className="scroll">
         <div className="content" ref={contentRef}>
           {view === 'edit' ? (
-            <ReminderEditor apiRef={editorApi} onValidityChange={onValidityChange} />
+            <ReminderEditor />
           ) : view === 'appearance' ? (
             <div className="appearance-card">
               <AppearanceSection value={appearance} onChange={changeAppearance} />
