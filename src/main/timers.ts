@@ -66,10 +66,11 @@ export class TimerEngine extends EventEmitter<TimerEvents> {
 
   /**
    * Brings the clocks in line with the reminders list: switched-on reminders
-   * get a clock (new ones start straight away), switched-off or deleted ones
+   * get a clock (new ones start straight away, except at launch for reminders
+   * that wait for ▶), switched-off or deleted ones
    * lose theirs, and a changed interval restarts that clock.
    */
-  setReminders(reminders: Reminder[]): void {
+  setReminders(reminders: Reminder[], options: { atLaunch?: boolean } = {}): void {
     const next = new Map<string, TimerState>()
     for (const r of reminders) {
       if (!r.enabled) continue
@@ -99,7 +100,9 @@ export class TimerEngine extends EventEmitter<TimerEvents> {
           snoozed: false,
           lastFiredAt: null
         }
-        this.run(t)
+        // When Otium opens, a reminder set to "Start when Otium opens" off waits for ▶.
+        // Reminders added or switched on while you're using the app start straight away.
+        if (!options.atLaunch || r.autoStart) this.run(t)
         next.set(r.id, t)
       }
     }

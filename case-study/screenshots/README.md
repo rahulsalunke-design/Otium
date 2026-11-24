@@ -26,6 +26,7 @@ This folder is listed in `.gitignore`, so it stays on this Mac and isn't uploade
 | 9 | `09-split-editing` | **Split editing** | 21 Nov 2026, commit `b819434` | Settings split in two (option 3 of the Settings exploration): ✎ Edit reminders turns the list into compact editable lines that open in place (interval −/+, sound, icon, delete; Cancel / Done), and the palette button opens a short Appearance screen that saves instantly. Replaces the single long Settings form. |
 | 10 | `10-reset-button` | **Reset button** | 23 Nov 2026, commit `cf40f40` | ↺ Reset is back beside pause/play on every row (it had been hidden behind hovering the ring). Snooze moved to the row's second line ("every 20 min · Snooze 5 min") so names never get cut off; a row stays open after its reminder goes off. List-view shots only (`1-timers`, `1a-list-hover` with Water hovered). |
 | 11 | `11-instant-editing` | **Instant editing** | 23 Nov 2026, commit `ca7dba0` | Edit reminders drops Cancel / Done: the switch, interval, sound, icon, name, add and delete all apply straight away (option G of the on/off exploration), with a 4-second Undo after switching off or deleting. Half-typed entries keep their last valid value. Shots: `2b-edit-reminder-open`, `2d-edit-undo`. |
+| 12 | `12-start-when-opens` | **Start when Otium opens** | 24 Nov 2026, commit "Start when Otium opens" | A per-reminder checkbox, ticked by default (existing reminders too): untick it and that reminder waits with ▶ after Otium opens at login, instead of counting down by itself. Shots: `2e` (ticked), `2f` (unticked), `1-timers-test123-waiting` (Test123 waiting with its full 30:00). |
 
 ## Screens in each folder
 
@@ -54,3 +55,4 @@ This folder is listed in `.gitignore`, so it stays on this Mac and isn't uploade
 - **v8 → v9:** settings that don't grow with you. Editing moves to where the reminders are, and the look gets its own small screen; one long form becomes two short, focused ones.
 - **v9 → v10:** a step back toward the obvious. Hiding Reset behind a hover made the main action hard to find, so it returns as a visible button, and Snooze moves down a line to make room.
 - **v10 → v11:** let the control mean what it looks like. A switch that waits for Done is a small lie; now it acts immediately, and Undo replaces Cancel as the safety net.
+- **v11 → v12:** respect that not every reminder is wanted every day. Starting everything at login was a default; now each reminder can choose.

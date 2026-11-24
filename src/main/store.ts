@@ -70,7 +70,9 @@ export function cleanReminders(input: unknown): Reminder[] {
       minutes: cleanMinutes(saved?.minutes, def.minutes),
       enabled: typeof saved?.enabled === 'boolean' ? saved.enabled : def.enabled,
       sound: cleanSound(saved?.sound, def.sound),
-      icon: cleanIcon(saved?.icon, def.icon)
+      icon: cleanIcon(saved?.icon, def.icon),
+      // Older saves have no autoStart: those reminders keep starting on their own.
+      autoStart: saved?.autoStart !== false
     }
   })
 
@@ -87,7 +89,8 @@ export function cleanReminders(input: unknown): Reminder[] {
       enabled: item.enabled !== false,
       builtIn: false,
       sound: cleanSound(item.sound, DEFAULT_SOUND),
-      icon: cleanIcon(item.icon, DEFAULT_ICON)
+      icon: cleanIcon(item.icon, DEFAULT_ICON),
+      autoStart: item.autoStart !== false
     })
   }
 

@@ -37,9 +37,9 @@ if (!app.requestSingleInstanceLock()) {
     registerIpc(engine, panel)
     setGlass(panel, getAppearance().glass)
 
-    // Switched-on reminders start on their own: a break app you have to
-    // remember to start isn't much help.
-    engine.setReminders(getReminders())
+    // Switched-on reminders start on their own (a break app you have to remember
+    // to start isn't much help), unless set to wait for ▶.
+    engine.setReminders(getReminders(), { atLaunch: true })
     engine.begin()
 
     app.on('second-instance', showPanel)

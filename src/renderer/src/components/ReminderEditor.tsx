@@ -145,7 +145,16 @@ export function ReminderEditor() {
     const id = crypto.randomUUID()
     apply([
       ...drafts,
-      { id, label: '', minutes: '30', enabled: true, builtIn: false, sound: DEFAULT_SOUND, icon: DEFAULT_ICON }
+      {
+        id,
+        label: '',
+        minutes: '30',
+        enabled: true,
+        builtIn: false,
+        sound: DEFAULT_SOUND,
+        icon: DEFAULT_ICON,
+        autoStart: true // ticked by default, like the built-in reminders
+      }
     ])
     setOpenId(id)
     setFocusId(id)
@@ -274,6 +283,21 @@ export function ReminderEditor() {
                 </button>
               </span>
             </div>
+
+            <label className="ed-check">
+              <input
+                type="checkbox"
+                className="check"
+                checked={d.autoStart}
+                onChange={(e) => update(d.id, { autoStart: e.target.checked })}
+              />
+              <span className="ed-check-text">
+                <span>Start when Otium opens</span>
+                <span className="ed-check-hint">
+                  Otium opens when you log in. Untick to start this one yourself with ▶.
+                </span>
+              </span>
+            </label>
 
             <div className="ed-sub">Icon</div>
             <div className="icon-grid" role="radiogroup" aria-label={`Icon for ${name}`}>

@@ -89,12 +89,14 @@ export interface Reminder {
   /** Played when the reminder goes off. */
   sound: SoundId
   icon: IconId
+  /** Start counting by itself when Otium opens (e.g. at login). Otherwise it waits for ▶. */
+  autoStart: boolean
 }
 
 export const BUILT_IN_REMINDERS: Reminder[] = [
-  { id: 'stand', label: 'Stand up', minutes: 45, enabled: true, builtIn: true, sound: 'rise', icon: 'stand' },
-  { id: 'water', label: 'Water', minutes: 60, enabled: true, builtIn: true, sound: 'droplet', icon: 'water' },
-  { id: 'eyes', label: 'Eye break', minutes: 20, enabled: true, builtIn: true, sound: 'bowl', icon: 'eye' }
+  { id: 'stand', label: 'Stand up', minutes: 45, enabled: true, builtIn: true, sound: 'rise', icon: 'stand', autoStart: true },
+  { id: 'water', label: 'Water', minutes: 60, enabled: true, builtIn: true, sound: 'droplet', icon: 'water', autoStart: true },
+  { id: 'eyes', label: 'Eye break', minutes: 20, enabled: true, builtIn: true, sound: 'bowl', icon: 'eye', autoStart: true }
 ]
 
 /** Notification text for the built-in reminders. Custom ones use their name. */
